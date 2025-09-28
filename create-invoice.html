@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Invoice - InvoiceGen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Include our custom modules -->
+    <script src="js/dataStore.js"></script>
+    <script src="js/modalSystem.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .user-menu {
+            transform: translateY(-10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+        .user-menu.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 24px;
+        }
+        .invoice-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            min-height: 600px;
+        }
+        .item-row {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 0;
+        }
+        .item-row:last-child {
+            border-bottom: none;
+        }
+        .recurring-options {
+            display: none;
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        .recurring-options.show {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-gray-900">InvoiceGen</h1>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index-enhanced.html" class="nav-link text-gray-600 hover:text-gray-900">Dashboard</a>
+                    <a href="invoices.html" class="nav-link text-blue-600 font-medium">Invoices</a>
+                    <a href="clients.html" class="nav-link text-gray-600 hover:text-gray-900">Clients</a>
+                    <a href="invoice-design.html" class="nav-link text-gray-600 hover:text-gray-900">Invoice Design</a>
+                    <a href="settings.html" class="nav-link text-gray-600 hover:text-gray-900">Settings</a>
+                </div>
+
+                <!-- User Menu -->
+                <div class="relative">
+                    <button id="user-menu-button" class="flex items-center space-x-3 text-gray-700 hover:text-gray-900 focus:outline-none">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">TU</span>
+                        </div>
+                        <div class="hidden md:block text-left">
+                            <div class="text-sm font-medium">Test User</div>
+                            <div class="text-xs text-gray-500">Admin</div>
+                        </div>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="user-menu" class="user-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                        <div class="px-4 py-2 border-b border-gray-200">
+                            <div class="text-sm font-medium text-gray-900">Test User</div>
+                            <div class="text-xs text-gray-500">test@invoicegen.com</div>
+                        </div>
+                        <a href="settings.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-cog mr-2"></i>Settings
+                        </a>
+                        <a href="subscription.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 bg-blue-50 text-blue-700">
+                            <i class="fas fa-credit-card mr-2"></i>Billing
+                        </a>
+                        <button onclick="logout()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Create New Invoice</h1>
+                    <p class="text-gray-600 mt-2">Create and customize your invoice with recurring options</p>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="saveDraft()" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-save mr-2"></i>Save Draft
+                    </button>
+                    <button onclick="previewInvoice()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-eye mr-2"></i>Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Invoice Form -->
+            <div class="space-y-6">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Invoice Number</label>
+                            <input type="text" id="invoice-number" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="INV-001">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Issue Date</label>
+                            <input type="date" id="issue-date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+                            <input type="date" id="due-date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="invoice-status" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="draft">Draft</option>
+                                <option value="sent">Sent</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Information -->
+                <div class="form-section">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Client Information</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Client</label>
+                            <select id="client-select" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Select a client...</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Client Name</label>
+                                <input type="text" id="client-name" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Client Name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Client Email</label>
+                                <input type="email" id="client-email" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="client@example.com">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Client Address</label>
+                            <textarea id="client-address" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Client address..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recurring Invoice Options -->
+                <div class="form-section">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recurring Options</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="is-recurring" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="is-recurring" class="ml-2 block text-sm text-gray-900">Make this a recurring invoice</label>
+                        </div>
+                        <div id="recurring-options" class="recurring-options">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Frequency</label>
+                                    <select id="recurring-frequency" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly" selected>Monthly</option>
+                                        <option value="quarterly">Quarterly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Next Invoice Date</label>
+                                    <input type="date" id="next-invoice-date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">End Date (Optional)</label>
+                                    <input type="date" id="recurring-end-date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Max Occurrences</label>
+                                    <input type="number" id="max-occurrences" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Leave empty for unlimited">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoice Items -->
+                <div class="form-section">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Invoice Items</h3>
+                        <button onclick="addItem()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Add Item
+                        </button>
+                    </div>
+                    <div id="invoice-items" class="space-y-4">
+                        <!-- Items will be added dynamically -->
+                    </div>
+                </div>
+
+                <!-- Totals and Actions -->
+                <div class="form-section">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center text-lg font-semibold">
+                            <span>Total Amount:</span>
+                            <span id="total-amount">$0.00</span>
+                        </div>
+                        <div class="flex space-x-4">
+                            <button onclick="createInvoiceAction()" class="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-check mr-2"></i>Create Invoice
+                            </button>
+                            <button onclick="sendInvoice()" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-paper-plane mr-2"></i>Create & Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoice Preview -->
+            <div class="invoice-preview">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900">INVOICE</h2>
+                    <p class="text-gray-600 mt-2" id="preview-invoice-number">INV-001</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">From:</h4>
+                        <div class="text-gray-600">
+                            <p>Your Company Name</p>
+                            <p>Your Address</p>
+                            <p>City, State ZIP</p>
+                            <p>your@email.com</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">To:</h4>
+                        <div class="text-gray-600" id="preview-client-info">
+                            <p>Client Name</p>
+                            <p>Client Address</p>
+                            <p>client@email.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <p><strong>Issue Date:</strong> <span id="preview-issue-date">-</span></p>
+                        <p><strong>Due Date:</strong> <span id="preview-due-date">-</span></p>
+                    </div>
+                    <div id="preview-recurring-info" style="display: none;">
+                        <p><strong>Recurring:</strong> <span id="preview-frequency">-</span></p>
+                        <p><strong>Next Invoice:</strong> <span id="preview-next-date">-</span></p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="text-left py-2">Description</th>
+                                <th class="text-right py-2">Qty</th>
+                                <th class="text-right py-2">Rate</th>
+                                <th class="text-right py-2">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="preview-items">
+                            <tr>
+                                <td colspan="4" class="text-center py-8 text-gray-500">No items added yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4 mt-4">
+                    <div class="flex justify-end">
+                        <div class="w-64">
+                            <div class="flex justify-between py-2 text-xl font-bold">
+                                <span>Total:</span>
+                                <span id="preview-total">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="auth-improved.js"></script>
+    <script>
+        let dataStore, modalSystem;
+        let itemCounter = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize modules
+            if (typeof DataStore !== 'undefined') {
+                dataStore = new DataStore();
+            }
+            if (typeof ModalSystem !== 'undefined') {
+                modalSystem = new ModalSystem();
+            }
+
+            setupEventListeners();
+            loadClients();
+            setDefaultDates();
+            addItem(); // Add first item by default
+        });
+
+        function setupEventListeners() {
+            // User menu functionality
+            document.getElementById('user-menu-button').addEventListener('click', function() {
+                document.getElementById('user-menu').classList.toggle('show');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const userMenu = document.getElementById('user-menu');
+                const userMenuButton = document.getElementById('user-menu-button');
+                
+                if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.remove('show');
+                }
+            });
+
+            // Recurring invoice toggle
+            document.getElementById('is-recurring').addEventListener('change', function() {
+                const recurringOptions = document.getElementById('recurring-options');
+                const previewRecurringInfo = document.getElementById('preview-recurring-info');
+                
+                if (this.checked) {
+                    recurringOptions.classList.add('show');
+                    previewRecurringInfo.style.display = 'block';
+                    updateRecurringPreview();
+                } else {
+                    recurringOptions.classList.remove('show');
+                    previewRecurringInfo.style.display = 'none';
+                }
+            });
+
+            // Form field listeners for live preview
+            document.getElementById('invoice-number').addEventListener('input', updatePreview);
+            document.getElementById('issue-date').addEventListener('change', updatePreview);
+            document.getElementById('due-date').addEventListener('change', updatePreview);
+            document.getElementById('client-name').addEventListener('input', updatePreview);
+            document.getElementById('client-email').addEventListener('input', updatePreview);
+            document.getElementById('client-address').addEventListener('input', updatePreview);
+            document.getElementById('recurring-frequency').addEventListener('change', updateRecurringPreview);
+            document.getElementById('next-invoice-date').addEventListener('change', updateRecurringPreview);
+
+            // Client select
+            document.getElementById('client-select').addEventListener('change', function() {
+                const clientId = this.value;
+                if (clientId && dataStore) {
+                    const clients = dataStore.getClients();
+                    const client = clients.find(c => c.id === clientId);
+                    if (client) {
+                        document.getElementById('client-name').value = client.name;
+                        document.getElementById('client-email').value = client.email;
+                        document.getElementById('client-address').value = client.address || '';
+                        updatePreview();
+                    }
+                }
+            });
+        }
+
+        function loadClients() {
+            if (!dataStore) return;
+            
+            const clients = dataStore.getClients();
+            const clientSelect = document.getElementById('client-select');
+            
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = client.name;
+                clientSelect.appendChild(option);
+            });
+        }
+
+        function setDefaultDates() {
+            const today = new Date();
+            const issueDate = today.toISOString().split('T')[0];
+            const dueDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            
+            document.getElementById('issue-date').value = issueDate;
+            document.getElementById('due-date').value = dueDate;
+            
+            // Set next invoice date to next month for recurring
+            const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+            document.getElementById('next-invoice-date').value = nextMonth.toISOString().split('T')[0];
+            
+            // Generate invoice number
+            const invoiceNumber = 'INV-' + String(Date.now()).slice(-6);
+            document.getElementById('invoice-number').value = invoiceNumber;
+            
+            updatePreview();
+        }
+
+        function addItem() {
+            itemCounter++;
+            const itemsContainer = document.getElementById('invoice-items');
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item-row';
+            itemDiv.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <input type="text" class="item-description w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Item description">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                        <input type="number" class="item-quantity w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="1" min="1">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Rate</label>
+                        <input type="number" class="item-rate w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="0" min="0" step="0.01">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="item-total font-semibold">$0.00</span>
+                        <button type="button" onclick="removeItem(this)" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            itemsContainer.appendChild(itemDiv);
+            
+            // Add event listeners for calculation
+            const quantityInput = itemDiv.querySelector('.item-quantity');
+            const rateInput = itemDiv.querySelector('.item-rate');
+            const descriptionInput = itemDiv.querySelector('.item-description');
+            
+            [quantityInput, rateInput, descriptionInput].forEach(input => {
+                input.addEventListener('input', calculateTotals);
+            });
+            
+            calculateTotals();
+        }
+
+        function removeItem(button) {
+            button.closest('.item-row').remove();
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            let total = 0;
+            const itemRows = document.querySelectorAll('.item-row');
+            
+            itemRows.forEach(row => {
+                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+                const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+                const itemTotal = quantity * rate;
+                
+                row.querySelector('.item-total').textContent = '$' + itemTotal.toFixed(2);
+                total += itemTotal;
+            });
+            
+            document.getElementById('total-amount').textContent = '$' + total.toFixed(2);
+            document.getElementById('preview-total').textContent = '$' + total.toFixed(2);
+            
+            updatePreviewItems();
+        }
+
+        function updatePreview() {
+            // Update invoice number
+            const invoiceNumber = document.getElementById('invoice-number').value;
+            document.getElementById('preview-invoice-number').textContent = invoiceNumber || 'INV-001';
+            
+            // Update dates
+            const issueDate = document.getElementById('issue-date').value;
+            const dueDate = document.getElementById('due-date').value;
+            document.getElementById('preview-issue-date').textContent = issueDate || '-';
+            document.getElementById('preview-due-date').textContent = dueDate || '-';
+            
+            // Update client info
+            const clientName = document.getElementById('client-name').value;
+            const clientEmail = document.getElementById('client-email').value;
+            const clientAddress = document.getElementById('client-address').value;
+            
+            const clientInfo = document.getElementById('preview-client-info');
+            clientInfo.innerHTML = `
+                <p>${clientName || 'Client Name'}</p>
+                <p>${clientAddress || 'Client Address'}</p>
+                <p>${clientEmail || 'client@email.com'}</p>
+            `;
+        }
+
+        function updateRecurringPreview() {
+            const frequency = document.getElementById('recurring-frequency').value;
+            const nextDate = document.getElementById('next-invoice-date').value;
+            
+            document.getElementById('preview-frequency').textContent = frequency.charAt(0).toUpperCase() + frequency.slice(1);
+            document.getElementById('preview-next-date').textContent = nextDate || '-';
+        }
+
+        function updatePreviewItems() {
+            const previewItems = document.getElementById('preview-items');
+            const itemRows = document.querySelectorAll('.item-row');
+            
+            if (itemRows.length === 0) {
+                previewItems.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-gray-500">No items added yet</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            itemRows.forEach(row => {
+                const description = row.querySelector('.item-description').value || 'Item description';
+                const quantity = row.querySelector('.item-quantity').value || '1';
+                const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+                const total = quantity * rate;
+                
+                html += `
+                    <tr class="border-b border-gray-100">
+                        <td class="py-2">${description}</td>
+                        <td class="text-right py-2">${quantity}</td>
+                        <td class="text-right py-2">$${rate.toFixed(2)}</td>
+                        <td class="text-right py-2">$${total.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            previewItems.innerHTML = html;
+        }
+
+        function saveDraft() {
+            const invoiceData = collectInvoiceData();
+            invoiceData.status = 'draft';
+            
+            if (dataStore) {
+                dataStore.saveInvoice(invoiceData);
+                alert('Invoice saved as draft!');
+            } else {
+                alert('Draft saved locally!');
+            }
+        }
+
+        function previewInvoice() {
+            // This could open a modal or new window with full preview
+            alert('Preview functionality - would open detailed preview');
+        }
+
+        function createInvoiceAction() {
+            const invoiceData = collectInvoiceData();
+            
+            if (!validateInvoiceData(invoiceData)) {
+                return;
+            }
+            
+            if (dataStore) {
+                dataStore.saveInvoice(invoiceData);
+                alert('Invoice created successfully!');
+                window.location.href = 'invoices.html';
+            } else {
+                alert('Invoice created! (DataStore not available)');
+            }
+        }
+
+        function sendInvoice() {
+            const invoiceData = collectInvoiceData();
+            invoiceData.status = 'sent';
+            
+            if (!validateInvoiceData(invoiceData)) {
+                return;
+            }
+            
+            if (dataStore) {
+                dataStore.saveInvoice(invoiceData);
+                alert('Invoice created and sent!');
+                window.location.href = 'invoices.html';
+            } else {
+                alert('Invoice created and sent! (DataStore not available)');
+            }
+        }
+
+        function collectInvoiceData() {
+            const items = [];
+            const itemRows = document.querySelectorAll('.item-row');
+            
+            itemRows.forEach(row => {
+                const description = row.querySelector('.item-description').value;
+                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+                const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+                
+                if (description && quantity > 0 && rate >= 0) {
+                    items.push({
+                        description,
+                        quantity,
+                        rate,
+                        total: quantity * rate
+                    });
+                }
+            });
+            
+            const total = items.reduce((sum, item) => sum + item.total, 0);
+            
+            const invoiceData = {
+                id: 'INV-' + Date.now(),
+                number: document.getElementById('invoice-number').value,
+                issueDate: document.getElementById('issue-date').value,
+                dueDate: document.getElementById('due-date').value,
+                status: document.getElementById('invoice-status').value,
+                client: {
+                    name: document.getElementById('client-name').value,
+                    email: document.getElementById('client-email').value,
+                    address: document.getElementById('client-address').value
+                },
+                items,
+                total,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Add recurring information if enabled
+            if (document.getElementById('is-recurring').checked) {
+                invoiceData.recurring = {
+                    enabled: true,
+                    frequency: document.getElementById('recurring-frequency').value,
+                    nextInvoiceDate: document.getElementById('next-invoice-date').value,
+                    endDate: document.getElementById('recurring-end-date').value,
+                    maxOccurrences: parseInt(document.getElementById('max-occurrences').value) || null,
+                    currentOccurrence: 1
+                };
+            }
+            
+            return invoiceData;
+        }
+
+        function validateInvoiceData(data) {
+            if (!data.client.name) {
+                alert('Please enter client name');
+                return false;
+            }
+            
+            if (!data.client.email) {
+                alert('Please enter client email');
+                return false;
+            }
+            
+            if (data.items.length === 0) {
+                alert('Please add at least one item');
+                return false;
+            }
+            
+            if (data.total <= 0) {
+                alert('Invoice total must be greater than 0');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function logout() {
+            if (window.ImprovedAuthService) {
+                window.ImprovedAuthService.logout();
+            } else {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

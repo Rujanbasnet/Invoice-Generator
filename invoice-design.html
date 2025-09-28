@@ -359,7 +359,162 @@
         // Generate preview
         function generatePreview() {
             updatePreview();
-            alert('Preview generated with current design settings');
+            showPreviewModal();
+        }
+
+        function showPreviewModal() {
+            const companyName = document.getElementById('company-name').value || 'Your Company Name';
+            const companyAddress = document.getElementById('company-address').value || 'Your Company Address';
+            const companyEmail = document.getElementById('company-email').value || 'your@email.com';
+            const companyPhone = document.getElementById('company-phone').value || 'Your Phone';
+            
+            const primaryColor = document.querySelector('.color-picker.selected')?.style.backgroundColor || '#3b82f6';
+            
+            const previewHTML = `
+                <div id="preview-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closePreviewModal()">
+                    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">Invoice Preview</h3>
+                            <button onclick="closePreviewModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="p-8">
+                            <div class="bg-white border border-gray-200 rounded-lg p-8" style="min-height: 600px;">
+                                <!-- Invoice Header -->
+                                <div class="flex justify-between items-start mb-8">
+                                    <div>
+                                        <h1 class="text-3xl font-bold" style="color: ${primaryColor}">INVOICE</h1>
+                                        <p class="text-gray-600 mt-2">Invoice #INV-2025-001</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="w-16 h-16 rounded-lg flex items-center justify-center mb-4" style="background-color: ${primaryColor}">
+                                            <i class="fas fa-building text-white text-2xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Company and Client Info -->
+                                <div class="grid grid-cols-2 gap-8 mb-8">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-3" style="color: ${primaryColor}">From:</h4>
+                                        <div class="text-gray-700">
+                                            <p class="font-semibold">${companyName}</p>
+                                            <p>${companyAddress}</p>
+                                            <p>${companyEmail}</p>
+                                            <p>${companyPhone}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-3" style="color: ${primaryColor}">To:</h4>
+                                        <div class="text-gray-700">
+                                            <p class="font-semibold">Sample Client</p>
+                                            <p>123 Client Street</p>
+                                            <p>City, State 12345</p>
+                                            <p>client@example.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Invoice Details -->
+                                <div class="grid grid-cols-2 gap-8 mb-8">
+                                    <div>
+                                        <p><strong>Issue Date:</strong> ${new Date().toLocaleDateString()}</p>
+                                        <p><strong>Due Date:</strong> ${new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString()}</p>
+                                    </div>
+                                    <div>
+                                        <p><strong>Payment Terms:</strong> Net 30</p>
+                                        <p><strong>Status:</strong> <span class="px-2 py-1 rounded text-sm" style="background-color: ${primaryColor}20; color: ${primaryColor}">Draft</span></p>
+                                    </div>
+                                </div>
+
+                                <!-- Invoice Items -->
+                                <div class="border border-gray-200 rounded-lg overflow-hidden mb-8">
+                                    <table class="w-full">
+                                        <thead style="background-color: ${primaryColor}10">
+                                            <tr>
+                                                <th class="text-left py-3 px-4 font-semibold" style="color: ${primaryColor}">Description</th>
+                                                <th class="text-right py-3 px-4 font-semibold" style="color: ${primaryColor}">Qty</th>
+                                                <th class="text-right py-3 px-4 font-semibold" style="color: ${primaryColor}">Rate</th>
+                                                <th class="text-right py-3 px-4 font-semibold" style="color: ${primaryColor}">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 px-4">Web Development Services</td>
+                                                <td class="text-right py-3 px-4">40</td>
+                                                <td class="text-right py-3 px-4">$75.00</td>
+                                                <td class="text-right py-3 px-4">$3,000.00</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 px-4">UI/UX Design</td>
+                                                <td class="text-right py-3 px-4">20</td>
+                                                <td class="text-right py-3 px-4">$85.00</td>
+                                                <td class="text-right py-3 px-4">$1,700.00</td>
+                                            </tr>
+                                            <tr class="border-b border-gray-100">
+                                                <td class="py-3 px-4">Project Management</td>
+                                                <td class="text-right py-3 px-4">10</td>
+                                                <td class="text-right py-3 px-4">$95.00</td>
+                                                <td class="text-right py-3 px-4">$950.00</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Totals -->
+                                <div class="flex justify-end mb-8">
+                                    <div class="w-64">
+                                        <div class="flex justify-between py-2 border-b border-gray-200">
+                                            <span>Subtotal:</span>
+                                            <span>$5,650.00</span>
+                                        </div>
+                                        <div class="flex justify-between py-2 border-b border-gray-200">
+                                            <span>Tax (8.5%):</span>
+                                            <span>$480.25</span>
+                                        </div>
+                                        <div class="flex justify-between py-3 text-lg font-bold" style="color: ${primaryColor}">
+                                            <span>Total:</span>
+                                            <span>$6,130.25</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="border-t border-gray-200 pt-6">
+                                    <div class="text-sm text-gray-600">
+                                        <p><strong>Payment Instructions:</strong></p>
+                                        <p>Please make payment within 30 days of invoice date. Late payments may incur additional fees.</p>
+                                        <p class="mt-4"><strong>Thank you for your business!</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-4 p-6 border-t border-gray-200">
+                            <button onclick="closePreviewModal()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                Close
+                            </button>
+                            <button onclick="downloadPreviewPDF()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-download mr-2"></i>Download PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', previewHTML);
+        }
+
+        function closePreviewModal() {
+            const modal = document.getElementById('preview-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function downloadPreviewPDF() {
+            alert('PDF download functionality would be implemented here');
+            closePreviewModal();
         }
 
         // Update preview
