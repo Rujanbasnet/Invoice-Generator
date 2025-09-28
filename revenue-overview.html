@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Overview - InvoiceGen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Include our custom modules -->
+    <script src="js/dataStore.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .user-menu {
+            transform: translateY(-10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+        .user-menu.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .revenue-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .revenue-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .chart-container {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .client-revenue-item {
+            transition: all 0.2s ease;
+        }
+        .client-revenue-item:hover {
+            background-color: #f8fafc;
+            transform: translateX(4px);
+        }
+        .invoice-item {
+            transition: all 0.2s ease;
+        }
+        .invoice-item:hover {
+            background-color: #f8fafc;
+            transform: translateX(4px);
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-paid {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .status-sent {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .status-overdue {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .period-selector {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-gray-900">InvoiceGen</h1>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index-enhanced.html" class="nav-link text-gray-600 hover:text-gray-900">Dashboard</a>
+                    <a href="invoices.html" class="nav-link text-gray-600 hover:text-gray-900">Invoices</a>
+                    <a href="clients.html" class="nav-link text-gray-600 hover:text-gray-900">Clients</a>
+                    <a href="invoice-design.html" class="nav-link text-gray-600 hover:text-gray-900">Invoice Design</a>
+                    <a href="settings.html" class="nav-link text-gray-600 hover:text-gray-900">Settings</a>
+                </div>
+
+                <!-- User Menu -->
+                <div class="relative">
+                    <button id="user-menu-button" class="flex items-center space-x-3 text-gray-700 hover:text-gray-900 focus:outline-none">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">TU</span>
+                        </div>
+                        <div class="hidden md:block text-left">
+                            <div class="text-sm font-medium">Test User</div>
+                            <div class="text-xs text-gray-500">Admin</div>
+                        </div>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="user-menu" class="user-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                        <div class="px-4 py-2 border-b border-gray-200">
+                            <div class="text-sm font-medium text-gray-900">Test User</div>
+                            <div class="text-xs text-gray-500">test@invoicegen.com</div>
+                        </div>
+                        <a href="settings.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-cog mr-2"></i>Settings
+                        </a>
+                        <a href="subscription.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 bg-blue-50 text-blue-700">
+                            <i class="fas fa-credit-card mr-2"></i>Billing
+                        </a>
+                        <button onclick="logout()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900">Revenue Overview</h2>
+                    <p class="text-gray-600 mt-2">Comprehensive revenue analytics and client distribution</p>
+                </div>
+                <div class="mt-4 sm:mt-0 flex items-center space-x-4">
+                    <div class="period-selector flex items-center space-x-2">
+                        <select id="period-selector" class="text-sm border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-blue-500">
+                            <option value="7d">Last 7 days</option>
+                            <option value="30d" selected>Last 30 days</option>
+                            <option value="90d">Last 90 days</option>
+                            <option value="1y">Last year</option>
+                            <option value="all">All time</option>
+                        </select>
+                        <button id="refresh-data" class="p-1 text-gray-600 hover:text-gray-900 transition-colors">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Revenue -->
+            <div class="revenue-card">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-dollar-sign text-white text-xl"></i>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-green-600 font-medium" id="revenue-growth">+0%</div>
+                        <div class="text-xs text-gray-500">vs previous period</div>
+                    </div>
+                </div>
+                <div class="metric-value" id="total-revenue">$0</div>
+                <div class="text-sm text-gray-600 mt-1">Total Revenue</div>
+                <div class="mt-3 text-xs text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    From <span id="paid-invoices-count">0</span> paid invoices
+                </div>
+            </div>
+
+            <!-- Average Invoice Value -->
+            <div class="revenue-card">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-blue-600 font-medium" id="avg-growth">+0%</div>
+                        <div class="text-xs text-gray-500">vs previous period</div>
+                    </div>
+                </div>
+                <div class="metric-value" id="avg-invoice-value">$0</div>
+                <div class="text-sm text-gray-600 mt-1">Average Invoice</div>
+                <div class="mt-3 text-xs text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Per invoice value
+                </div>
+            </div>
+
+            <!-- Monthly Recurring Revenue -->
+            <div class="revenue-card">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-sync-alt text-white text-xl"></i>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-purple-600 font-medium" id="mrr-growth">+0%</div>
+                        <div class="text-xs text-gray-500">vs last month</div>
+                    </div>
+                </div>
+                <div class="metric-value" id="monthly-recurring">$0</div>
+                <div class="text-sm text-gray-600 mt-1">Monthly Recurring</div>
+                <div class="mt-3 text-xs text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    From <span id="recurring-count">0</span> recurring invoices
+                </div>
+            </div>
+
+            <!-- Collection Rate -->
+            <div class="revenue-card">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-percentage text-white text-xl"></i>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-orange-600 font-medium" id="collection-growth">+0%</div>
+                        <div class="text-xs text-gray-500">vs previous period</div>
+                    </div>
+                </div>
+                <div class="metric-value" id="collection-rate">0%</div>
+                <div class="text-sm text-gray-600 mt-1">Collection Rate</div>
+                <div class="mt-3 text-xs text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Avg: <span id="avg-collection-days">0</span> days
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Revenue Trend Chart -->
+            <div class="chart-container">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Revenue Trend</h3>
+                    <div class="flex space-x-2">
+                        <button class="chart-type-btn px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-md" data-chart-type="line">Line</button>
+                        <button class="chart-type-btn px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-md" data-chart-type="bar">Bar</button>
+                    </div>
+                </div>
+                <div id="revenue-trend-chart" style="height: 350px;"></div>
+            </div>
+
+            <!-- Client Revenue Distribution -->
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Client Revenue Distribution</h3>
+                <div id="client-distribution-chart" style="height: 350px;"></div>
+            </div>
+        </div>
+
+        <!-- Detailed Sections -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Top Clients by Revenue -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-crown mr-2 text-yellow-500"></i>
+                            Top Clients by Revenue
+                        </h3>
+                        <button onclick="exportClientReport()" class="text-sm text-blue-600 hover:text-blue-500">
+                            Export Report
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div id="top-clients-list" class="space-y-4">
+                        <!-- Client items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent High-Value Invoices -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-star mr-2 text-blue-500"></i>
+                            Recent High-Value Invoices
+                        </h3>
+                        <button onclick="viewAllInvoices()" class="text-sm text-blue-600 hover:text-blue-500">
+                            View All
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div id="high-value-invoices" class="space-y-4">
+                        <!-- Invoice items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400">© 2025 InvoiceGen. Professional invoice management for modern businesses.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="auth-improved.js"></script>
+    <script>
+        let dataStore;
+        let charts = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize modules
+            if (typeof DataStore !== 'undefined') {
+                dataStore = new DataStore();
+            }
+
+            setupEventListeners();
+            initializeCharts();
+            loadRevenueData();
+        });
+
+        function setupEventListeners() {
+            // User menu functionality
+            document.getElementById('user-menu-button').addEventListener('click', function() {
+                document.getElementById('user-menu').classList.toggle('show');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const userMenu = document.getElementById('user-menu');
+                const userMenuButton = document.getElementById('user-menu-button');
+                
+                if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.remove('show');
+                }
+            });
+
+            // Period selector
+            document.getElementById('period-selector').addEventListener('change', function() {
+                loadRevenueData();
+            });
+
+            // Refresh button
+            document.getElementById('refresh-data').addEventListener('click', function() {
+                loadRevenueData();
+            });
+
+            // Chart type switcher
+            const chartTypeButtons = document.querySelectorAll('.chart-type-btn');
+            chartTypeButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // Update active button
+                    chartTypeButtons.forEach(b => {
+                        b.className = 'chart-type-btn px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-md';
+                    });
+                    e.target.className = 'chart-type-btn px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-md';
+                    
+                    // Switch chart type
+                    switchChartType(e.target.dataset.chartType);
+                });
+            });
+        }
+
+        function initializeCharts() {
+            // Revenue Trend Chart
+            const trendElement = document.getElementById('revenue-trend-chart');
+            if (trendElement) {
+                charts.revenueTrend = echarts.init(trendElement);
+            }
+
+            // Client Distribution Chart
+            const distributionElement = document.getElementById('client-distribution-chart');
+            if (distributionElement) {
+                charts.clientDistribution = echarts.init(distributionElement);
+            }
+        }
+
+        function loadRevenueData() {
+            const period = document.getElementById('period-selector').value;
+            
+            // Get data based on period
+            const revenueData = getRevenueData(period);
+            
+            // Update summary cards
+            updateSummaryCards(revenueData);
+            
+            // Update charts
+            updateRevenueTrendChart(revenueData);
+            updateClientDistributionChart(revenueData);
+            
+            // Update lists
+            updateTopClientsList(revenueData);
+            updateHighValueInvoices(revenueData);
+        }
+
+        function getRevenueData(period) {
+            // Mock data - in real app, this would come from dataStore
+            const mockData = {
+                totalRevenue: 48750,
+                paidInvoicesCount: 23,
+                avgInvoiceValue: 2119,
+                monthlyRecurring: 8500,
+                recurringCount: 5,
+                collectionRate: 87.5,
+                avgCollectionDays: 18,
+                revenueGrowth: 12.5,
+                avgGrowth: 8.2,
+                mrrGrowth: 15.3,
+                collectionGrowth: 5.1,
+                revenueTrend: [
+                    { date: '2025-01', revenue: 32500, invoices: 15 },
+                    { date: '2025-02', revenue: 38200, invoices: 18 },
+                    { date: '2025-03', revenue: 41800, invoices: 20 },
+                    { date: '2025-04', revenue: 45300, invoices: 21 },
+                    { date: '2025-05', revenue: 48750, invoices: 23 }
+                ],
+                topClients: [
+                    { name: 'Acme Corporation', revenue: 15400, invoices: 6, growth: 18.5 },
+                    { name: 'Tech Solutions Inc', revenue: 12800, invoices: 5, growth: 12.3 },
+                    { name: 'Global Industries', revenue: 8900, invoices: 4, growth: -5.2 },
+                    { name: 'Startup Co', revenue: 6700, invoices: 3, growth: 25.8 },
+                    { name: 'Enterprise Ltd', revenue: 4950, invoices: 5, growth: 8.9 }
+                ],
+                highValueInvoices: [
+                    { id: 'INV-2025-045', client: 'Acme Corporation', amount: 5200, date: '2025-09-25', status: 'paid' },
+                    { id: 'INV-2025-044', client: 'Tech Solutions Inc', amount: 4800, date: '2025-09-23', status: 'paid' },
+                    { id: 'INV-2025-043', client: 'Global Industries', amount: 3900, date: '2025-09-20', status: 'sent' },
+                    { id: 'INV-2025-042', client: 'Startup Co', amount: 3500, date: '2025-09-18', status: 'paid' },
+                    { id: 'INV-2025-041', client: 'Enterprise Ltd', amount: 3200, date: '2025-09-15', status: 'overdue' }
+                ]
+            };
+
+            // If dataStore is available, get real data
+            if (dataStore) {
+                const invoices = dataStore.getInvoices();
+                const clients = dataStore.getClients();
+                
+                // Calculate real metrics
+                const paidInvoices = invoices.filter(inv => inv.status === 'paid');
+                const totalRevenue = paidInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
+                const recurringInvoices = invoices.filter(inv => inv.recurring && inv.recurring.enabled);
+                
+                mockData.totalRevenue = totalRevenue;
+                mockData.paidInvoicesCount = paidInvoices.length;
+                mockData.avgInvoiceValue = paidInvoices.length > 0 ? totalRevenue / paidInvoices.length : 0;
+                mockData.recurringCount = recurringInvoices.length;
+                
+                // Calculate client revenue distribution
+                const clientRevenue = {};
+                paidInvoices.forEach(invoice => {
+                    const clientName = invoice.client?.name || 'Unknown Client';
+                    clientRevenue[clientName] = (clientRevenue[clientName] || 0) + (invoice.total || 0);
+                });
+                
+                mockData.topClients = Object.entries(clientRevenue)
+                    .map(([name, revenue]) => ({
+                        name,
+                        revenue,
+                        invoices: paidInvoices.filter(inv => inv.client?.name === name).length,
+                        growth: Math.random() * 30 - 10 // Mock growth
+                    }))
+                    .sort((a, b) => b.revenue - a.revenue)
+                    .slice(0, 5);
+            }
+
+            return mockData;
+        }
+
+        function updateSummaryCards(data) {
+            // Animate numbers
+            animateNumber(document.getElementById('total-revenue'), data.totalRevenue, '$');
+            animateNumber(document.getElementById('avg-invoice-value'), data.avgInvoiceValue, '$');
+            animateNumber(document.getElementById('monthly-recurring'), data.monthlyRecurring, '$');
+            animateNumber(document.getElementById('collection-rate'), data.collectionRate, '', '%');
+            
+            // Update counts and growth
+            document.getElementById('paid-invoices-count').textContent = data.paidInvoicesCount;
+            document.getElementById('recurring-count').textContent = data.recurringCount;
+            document.getElementById('avg-collection-days').textContent = data.avgCollectionDays;
+            
+            // Update growth indicators
+            updateGrowthIndicator('revenue-growth', data.revenueGrowth);
+            updateGrowthIndicator('avg-growth', data.avgGrowth);
+            updateGrowthIndicator('mrr-growth', data.mrrGrowth);
+            updateGrowthIndicator('collection-growth', data.collectionGrowth);
+        }
+
+        function animateNumber(element, targetValue, prefix = '', suffix = '') {
+            if (!element) return;
+            
+            const startValue = 0;
+            const duration = 1500;
+            const startTime = Date.now();
+            
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function (ease-out)
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOut);
+                
+                element.textContent = prefix + currentValue.toLocaleString() + suffix;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            };
+            
+            animate();
+        }
+
+        function updateGrowthIndicator(elementId, growth) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const isPositive = growth >= 0;
+            element.textContent = (isPositive ? '+' : '') + growth.toFixed(1) + '%';
+            element.className = `text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`;
+        }
+
+        function updateRevenueTrendChart(data) {
+            if (!charts.revenueTrend) return;
+            
+            const option = {
+                title: {
+                    text: 'Revenue Trend Over Time',
+                    left: 'center',
+                    textStyle: {
+                        color: '#374151',
+                        fontSize: 16,
+                        fontWeight: 'bold'
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    borderColor: '#e5e7eb',
+                    textStyle: {
+                        color: '#374151'
+                    }
+                },
+                legend: {
+                    data: ['Revenue', 'Invoices'],
+                    bottom: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: data.revenueTrend.map(item => item.date),
+                    axisLine: {
+                        lineStyle: { color: '#e5e7eb' }
+                    },
+                    axisLabel: {
+                        color: '#6b7280'
+                    }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: 'Revenue ($)',
+                        position: 'left',
+                        axisLine: {
+                            lineStyle: { color: '#e5e7eb' }
+                        },
+                        axisLabel: {
+                            color: '#6b7280',
+                            formatter: '${value}'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: 'Invoices',
+                        position: 'right',
+                        axisLine: {
+                            lineStyle: { color: '#e5e7eb' }
+                        },
+                        axisLabel: {
+                            color: '#6b7280'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: 'Revenue',
+                        type: 'line',
+                        smooth: true,
+                        data: data.revenueTrend.map(item => item.revenue),
+                        lineStyle: {
+                            color: '#10b981',
+                            width: 3
+                        },
+                        areaStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0, y: 0, x2: 0, y2: 1,
+                                colorStops: [
+                                    { offset: 0, color: 'rgba(16, 185, 129, 0.3)' },
+                                    { offset: 1, color: 'rgba(16, 185, 129, 0.05)' }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        name: 'Invoices',
+                        type: 'bar',
+                        yAxisIndex: 1,
+                        data: data.revenueTrend.map(item => item.invoices),
+                        itemStyle: {
+                            color: '#3b82f6'
+                        }
+                    }
+                ]
+            };
+            
+            charts.revenueTrend.setOption(option);
+        }
+
+        function updateClientDistributionChart(data) {
+            if (!charts.clientDistribution) return;
+            
+            const option = {
+                title: {
+                    text: 'Client Revenue Distribution',
+                    left: 'center',
+                    textStyle: {
+                        color: '#374151',
+                        fontSize: 16,
+                        fontWeight: 'bold'
+                    }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: ${c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    textStyle: {
+                        color: '#6b7280'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Client Revenue',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '18',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: data.topClients.map((client, index) => ({
+                            value: client.revenue,
+                            name: client.name,
+                            itemStyle: {
+                                color: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6b7280'][index]
+                            }
+                        }))
+                    }
+                ]
+            };
+            
+            charts.clientDistribution.setOption(option);
+        }
+
+        function updateTopClientsList(data) {
+            const container = document.getElementById('top-clients-list');
+            if (!container) return;
+            
+            container.innerHTML = data.topClients.map((client, index) => `
+                <div class="client-revenue-item flex items-center justify-between p-4 rounded-lg border border-gray-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-bold">${index + 1}</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${client.name}</h4>
+                            <p class="text-sm text-gray-500">${client.invoices} invoices</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-gray-900">$${client.revenue.toLocaleString()}</div>
+                        <div class="text-sm ${client.growth >= 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${client.growth >= 0 ? '+' : ''}${client.growth.toFixed(1)}%
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateHighValueInvoices(data) {
+            const container = document.getElementById('high-value-invoices');
+            if (!container) return;
+            
+            container.innerHTML = data.highValueInvoices.map(invoice => `
+                <div class="invoice-item flex items-center justify-between p-4 rounded-lg border border-gray-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-file-invoice text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">${invoice.id}</h4>
+                            <p class="text-sm text-gray-500">${invoice.client}</p>
+                            <p class="text-xs text-gray-400">${invoice.date}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-gray-900">$${invoice.amount.toLocaleString()}</div>
+                        <span class="status-badge status-${invoice.status}">${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchChartType(chartType) {
+            // Implementation for switching chart types
+            console.log('Switching to chart type:', chartType);
+        }
+
+        function exportClientReport() {
+            alert('📊 Client revenue report export feature coming soon!');
+        }
+
+        function viewAllInvoices() {
+            window.location.href = 'invoices.html';
+        }
+
+        function logout() {
+            if (window.ImprovedAuthService) {
+                window.ImprovedAuthService.logout();
+            } else {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Handle window resize for charts
+        window.addEventListener('resize', function() {
+            Object.values(charts).forEach(chart => {
+                if (chart && typeof chart.resize === 'function') {
+                    chart.resize();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

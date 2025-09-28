@@ -463,9 +463,12 @@
         }
 
         function filterByStatus(status) {
-            // Navigate to invoices page with filter
-            const url = status === 'all' ? 'invoices.html' : `invoices.html?filter=${status}`;
-            window.location.href = url;
+            // Navigate to revenue overview for 'all' (total revenue), otherwise to invoices with filter
+            if (status === 'all') {
+                window.location.href = 'revenue-overview.html';
+            } else {
+                window.location.href = `invoices.html?filter=${status}`;
+            }
         }
 
         function navigateToClients() {

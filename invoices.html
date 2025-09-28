@@ -472,6 +472,11 @@
                                 <button onclick="downloadInvoicePDF('${invoice.id}')" class="text-indigo-600 hover:text-indigo-900" title="Download PDF">
                                     <i class="fas fa-file-pdf"></i>
                                 </button>
+                                ${invoice.status === 'paid' || invoice.status === 'sent' ? `
+                                <button onclick="sendRecurring('${invoice.id}')" class="text-orange-600 hover:text-orange-900" title="Send Recurring">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                ` : ''}
                                 <button onclick="deleteInvoice('${invoice.id}')" class="text-red-600 hover:text-red-900" title="Delete Invoice">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -484,7 +489,7 @@
 
         // Invoice functions
         function createInvoice() {
-            modalSystem.showEditInvoiceModal();
+            window.location.href = 'create-invoice.html';
         }
 
         function viewInvoice(invoiceId) {
@@ -522,6 +527,74 @@
                         alert('Error generating PDF. Please try again.');
                     });
             }
+        }
+
+        function sendRecurring(invoiceId) {
+            const invoice = dataStore.getInvoice(invoiceId);
+            if (!invoice) {
+                alert('Invoice not found');
+                return;
+            }
+
+            // Show recurring options modal/form
+            const frequency = prompt('Select recurring frequency:\n1. Weekly\n2. Monthly\n3. Quarterly\n4. Yearly\n\nEnter number (1-4):', '2');
+            
+            if (!frequency || frequency < 1 || frequency > 4) {
+                return;
+            }
+
+            const frequencies = ['', 'weekly', 'monthly', 'quarterly', 'yearly'];
+            const selectedFrequency = frequencies[parseInt(frequency)];
+
+            // Calculate next invoice date
+            const today = new Date();
+            let nextDate = new Date(today);
+            
+            switch(selectedFrequency) {
+                case 'weekly':
+                    nextDate.setDate(today.getDate() + 7);
+                    break;
+                case 'monthly':
+                    nextDate.setMonth(today.getMonth() + 1);
+                    break;
+                case 'quarterly':
+                    nextDate.setMonth(today.getMonth() + 3);
+                    break;
+                case 'yearly':
+                    nextDate.setFullYear(today.getFullYear() + 1);
+                    break;
+            }
+
+            // Create recurring invoice data
+            const recurringData = {
+                ...invoice,
+                id: 'INV-' + Date.now(),
+                number: 'INV-' + String(Date.now()).slice(-6),
+                issueDate: today.toISOString().split('T')[0],
+                dueDate: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                status: 'draft',
+                recurring: {
+                    enabled: true,
+                    frequency: selectedFrequency,
+                    nextInvoiceDate: nextDate.toISOString().split('T')[0],
+                    parentInvoiceId: invoiceId,
+                    currentOccurrence: 1
+                },
+                createdAt: new Date().toISOString()
+            };
+
+            // Save the recurring invoice
+            if (dataStore && typeof dataStore.saveInvoice === 'function') {
+                dataStore.saveInvoice(recurringData);
+            } else {
+                // Fallback to localStorage
+                let invoices = JSON.parse(localStorage.getItem('invoices') || '[]');
+                invoices.push(recurringData);
+                localStorage.setItem('invoices', JSON.stringify(invoices));
+            }
+            
+            alert(`Recurring invoice created! Next invoice will be generated ${selectedFrequency} starting from ${nextDate.toLocaleDateString()}`);
+            loadInvoiceData();
         }
 
         function deleteInvoice(invoiceId) {
