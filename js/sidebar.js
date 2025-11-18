@@ -1,7 +1,6 @@
 (function () {
   const SIDEBAR_URL = 'sidebar.html';
   const PLACEHOLDER_ID = 'main-sidebar';
-  const HIGHLIGHT_CLASSES = ['active-link'];
   const HIGHLIGHT_CLASSES = ['bg-indigo-50', 'text-indigo-700', 'font-semibold'];
 
   const state = {
