@@ -58,33 +58,33 @@
           <button onclick="filterInvoices('all')" class="surface-card metric-card text-left">
             <h3>Total Invoices</h3>
             <p class="metric-value" id="totalInvoices">3</p>
-            <span class="text-sm text-slate-400">Across all statuses</span>
+            <span class="text-sm text-gray-600">Across all statuses</span>
           </button>
 
           <button onclick="filterInvoices('pending')" class="surface-card metric-card text-left">
             <h3>Pending</h3>
             <p class="metric-value text-amber-300" id="pendingInvoices">1</p>
-            <span class="text-sm text-slate-400">Awaiting payment</span>
+            <span class="text-sm text-gray-600">Awaiting payment</span>
           </button>
 
           <button onclick="filterInvoices('overdue')" class="surface-card metric-card text-left">
             <h3>Overdue</h3>
             <p class="metric-value text-rose-300" id="overdueInvoices">1</p>
-            <span class="text-sm text-slate-400">Needs attention</span>
+            <span class="text-sm text-gray-600">Needs attention</span>
           </button>
 
           <button onclick="filterInvoices('paid')" class="surface-card metric-card text-left">
             <h3>Paid</h3>
             <p class="metric-value text-emerald-300" id="paidInvoices">1</p>
-            <span class="text-sm text-slate-400">Cleared invoices</span>
+            <span class="text-sm text-gray-600">Cleared invoices</span>
           </button>
         </div>
 
         <!-- Reports Shortcut -->
         <div class="surface-card surface-card--soft px-6 py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div class="space-y-1">
-            <h3 class="text-xl font-semibold text-white">Reports &amp; Insights</h3>
-            <p class="text-slate-400 text-sm max-w-xl">View revenue, client activity, and performance trends powered by real-time data.</p>
+            <h3 class="text-xl font-semibold text-gray-900">Reports &amp; Insights</h3>
+            <p class="text-gray-600 text-sm max-w-xl">View revenue, client activity, and performance trends powered by real-time data.</p>
           </div>
           <a href="reports.html" class="primary-action">
             <span>View Reports</span>
@@ -109,7 +109,7 @@
                 <th class="px-4 py-3 text-left">Actions</th>
               </tr>
             </thead>
-            <tbody id="invoiceTableBody" class="divide-y divide-white/5">
+            <tbody id="invoiceTableBody" class="divide-y divide-gray-200">
               <!-- JS will populate this dynamically -->
             </tbody>
           </table>
@@ -141,7 +141,7 @@
         const renderTable = (filteredInvoices) => {
             tbody.innerHTML = '';
             if (filteredInvoices.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500">No invoices found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-gray-500">No invoices found.</td></tr>';
                 return;
             }
 
@@ -160,14 +160,14 @@
                 `;
 
                 row.innerHTML = `
-                    <td class="px-4 py-3 font-medium text-slate-100">${inv.id}</td>
-                    <td class="px-4 py-3 text-slate-300">${inv.client}</td>
-                    <td class="px-4 py-3 text-slate-400">${inv.date}</td>
-                    <td class="px-4 py-3 text-slate-100">${inv.amount}</td>
+                    <td class="px-4 py-3 font-medium text-gray-900">${inv.id}</td>
+                    <td class="px-4 py-3 text-gray-700">${inv.client}</td>
+                    <td class="px-4 py-3 text-gray-600">${inv.date}</td>
+                    <td class="px-4 py-3 text-gray-900">${inv.amount}</td>
                     <td class="px-4 py-3">
                         <span class="status-pill" data-variant="${variant}">${inv.status}</span>
                     </td>
-                    <td class="px-4 py-3 flex gap-2 items-center text-slate-300">${actionsHTML}</td>
+                    <td class="px-4 py-3 flex gap-2 items-center text-gray-700">${actionsHTML}</td>
                 `;
                 tbody.appendChild(row);
             });

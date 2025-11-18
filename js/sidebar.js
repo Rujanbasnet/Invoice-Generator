@@ -65,74 +65,47 @@
 
   function buildFallbackMarkup() {
     return `
-      <div data-sidebar-root class="sidebar-shell hidden md:flex w-full max-w-[19.5rem] flex-col min-h-screen text-slate-100">
-        <div class="sidebar-brand">
-          <a href="dashboard.html" class="flex items-center gap-4">
-            <span class="sidebar-brand-badge">
-              <svg aria-hidden="true" viewBox="0 0 56 56" class="h-10 w-10 text-slate-950">
-                <defs>
-                  <linearGradient id="invoicepro-logo" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="rgba(15,23,42,0.65)" />
-                    <stop offset="100%" stop-color="rgba(15,23,42,0.9)" />
-                  </linearGradient>
-                </defs>
-                <path fill="url(#invoicepro-logo)" d="M16 12h14c6.5 0 11 4.1 11 10.2 0 5.8-4.3 9.8-10.7 9.8H22v11h-6V12Zm6 6v7h6.1c2.4 0 4-1.5 4-3.6s-1.6-3.4-4-3.4H22Zm19-6h6v28h-6V12Z" />
-              </svg>
-              <span class="sr-only">InvoicePro</span>
-            </span>
-            <span class="flex flex-col leading-tight">
-              <span class="text-[1.45rem] font-semibold tracking-tight text-white">InvoicePro</span>
-              <span class="text-xs uppercase tracking-[0.55em] text-sky-300/80">Command Center</span>
-            </span>
+      <div data-sidebar-root class="flex flex-col h-screen bg-white border-r border-gray-200 shadow-sm">
+        <div class="px-6 py-5 border-b border-gray-100">
+          <a href="dashboard.html" class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md">IP</div>
+            <div class="flex flex-col">
+              <span class="text-xl font-bold text-gray-900">Invoice<span class="text-indigo-600">Pro</span></span>
+              <span class="text-xs text-gray-500 uppercase tracking-wide">Dashboard</span>
+            </div>
           </a>
         </div>
-        <nav class="flex-1" aria-label="Primary navigation">
-          <a href="dashboard.html" data-nav="dashboard">
-            <span class="icon">🏠</span>
-            <span>Dashboard</span>
+        <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto" aria-label="Primary navigation">
+          <a href="dashboard.html" data-nav="dashboard" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:bg-indigo-50 hover:text-indigo-700">
+            <span class="text-xl">🏠</span>
+            <span class="transition-transform duration-200 group-hover:translate-x-0.5">Dashboard</span>
           </a>
-          <a href="create-invoice.html" data-nav="create-invoice">
-            <span class="icon">🧾</span>
-            <span>Create Invoice</span>
+          <a href="create-invoice.html" data-nav="create-invoice" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:bg-indigo-50 hover:text-indigo-700">
+            <span class="text-xl">🧾</span>
+            <span class="transition-transform duration-200 group-hover:translate-x-0.5">Create Invoice</span>
           </a>
-          <a href="invoices.html" data-nav="invoices">
-            <span class="icon">💼</span>
-            <span>Invoices</span>
+          <a href="invoices.html" data-nav="invoices" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:bg-indigo-50 hover:text-indigo-700">
+            <span class="text-xl">💼</span>
+            <span class="transition-transform duration-200 group-hover:translate-x-0.5">Invoices</span>
           </a>
-          <a href="clients.html" data-nav="clients">
-            <span class="icon">👤</span>
-            <span>Clients</span>
+          <a href="clients.html" data-nav="clients" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:bg-indigo-50 hover:text-indigo-700">
+            <span class="text-xl">👤</span>
+            <span class="transition-transform duration-200 group-hover:translate-x-0.5">Clients</span>
           </a>
-          <a href="reports.html" data-nav="reports">
-            <span class="icon">📊</span>
-            <span>Reports</span>
+          <a href="reports.html" data-nav="reports" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:bg-indigo-50 hover:text-indigo-700">
+            <span class="text-xl">📊</span>
+            <span class="transition-transform duration-200 group-hover:translate-x-0.5">Reports</span>
           </a>
-          <a href="settings.html" data-nav="settings">
-            <span class="icon">⚙️</span>
-            <span>Settings</span>
+          <a href="settings.html" data-nav="settings" class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:bg-indigo-50 hover:text-indigo-700">
+            <span class="text-xl">⚙️</span>
+            <span class="transition-transform duration-200 group-hover:translate-x-0.5">Settings</span>
           </a>
         </nav>
-        <div class="sidebar-footer">
-          <button type="button" id="logout-button" class="logout-button">
+        <div class="p-4 border-t border-gray-100">
+          <button id="logout-button" class="logout-button w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg">
             <span class="text-lg">↪</span>
-            <span>Logout</span>
+            <span class="font-medium">Logout</span>
           </button>
-      <div data-sidebar-root class="w-64 bg-white shadow-md hidden md:flex flex-col">
-        <div class="px-6 py-4 border-b">
-          <a href="dashboard.html">
-            <h1 class="text-xl font-bold text-indigo-600">Invoice<span class="text-gray-900">Pro</span></h1>
-          </a>
-        </div>
-        <nav class="flex-1 px-4 py-6 space-y-2">
-          <a href="dashboard.html" data-nav="dashboard" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100">🏠 Dashboard</a>
-          <a href="create-invoice.html" data-nav="create-invoice" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100">🧾 Create Invoice</a>
-          <a href="invoices.html" data-nav="invoices" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100">💼 Invoices</a>
-          <a href="clients.html" data-nav="clients" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100">👤 Clients</a>
-          <a href="reports.html" data-nav="reports" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100">📊 Reports</a>
-          <a href="settings.html" data-nav="settings" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100">⚙️ Settings</a>
-        </nav>
-        <div class="p-4 border-t">
-          <button id="logout-button" class="logout-button w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">Logout</button>
         </div>
       </div>
     `;

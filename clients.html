@@ -51,27 +51,27 @@
                 <th class="text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="clientTableBody" class="divide-y divide-white/5">
-              <tr class="transition-colors hover:bg-white/5">
-                <td class="px-4 py-3 font-medium text-slate-100">Acme Corp</td>
-                <td class="px-4 py-3 text-slate-300">info@acme.com</td>
-                <td class="px-4 py-3 text-slate-300">123-456-7890</td>
-                <td class="px-4 py-3 text-slate-300">Acme Corporation</td>
-                <td class="px-4 py-3 text-slate-400">123 Main St, Cityville</td>
+            <tbody id="clientTableBody" class="divide-y divide-gray-200">
+              <tr class="transition-colors hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium text-gray-900">Acme Corp</td>
+                <td class="px-4 py-3 text-gray-700">info@acme.com</td>
+                <td class="px-4 py-3 text-gray-700">123-456-7890</td>
+                <td class="px-4 py-3 text-gray-700">Acme Corporation</td>
+                <td class="px-4 py-3 text-gray-600">123 Main St, Cityville</td>
                 <td class="px-4 py-3 text-right">
                   <button class="secondary-action px-3 py-1 mr-2" onclick="editClient(this)">Edit</button>
-                  <button class="secondary-action px-3 py-1 text-rose-300 hover:text-white" onclick="deleteClient(this)">Delete</button>
+                  <button class="secondary-action px-3 py-1 text-red-600 hover:text-red-700" onclick="deleteClient(this)">Delete</button>
                 </td>
               </tr>
-              <tr class="transition-colors hover:bg-white/5">
-                <td class="px-4 py-3 font-medium text-slate-100">Blue Ocean LLC</td>
-                <td class="px-4 py-3 text-slate-300">contact@blueocean.com</td>
-                <td class="px-4 py-3 text-slate-300">987-654-3210</td>
-                <td class="px-4 py-3 text-slate-300">Blue Ocean LLC</td>
-                <td class="px-4 py-3 text-slate-400">456 Bay Rd, Seaville</td>
+              <tr class="transition-colors hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium text-gray-900">Blue Ocean LLC</td>
+                <td class="px-4 py-3 text-gray-700">contact@blueocean.com</td>
+                <td class="px-4 py-3 text-gray-700">987-654-3210</td>
+                <td class="px-4 py-3 text-gray-700">Blue Ocean LLC</td>
+                <td class="px-4 py-3 text-gray-600">456 Bay Rd, Seaville</td>
                 <td class="px-4 py-3 text-right">
                   <button class="secondary-action px-3 py-1 mr-2" onclick="editClient(this)">Edit</button>
-                  <button class="secondary-action px-3 py-1 text-rose-300 hover:text-white" onclick="deleteClient(this)">Delete</button>
+                  <button class="secondary-action px-3 py-1 text-red-600 hover:text-red-700" onclick="deleteClient(this)">Delete</button>
                 </td>
               </tr>
             </tbody>
@@ -97,7 +97,7 @@
         <button type="submit" class="primary-action px-6">Save</button>
       </div>
     </form>
-    <button class="absolute top-3 right-4 text-slate-400 hover:text-white text-2xl" onclick="closeModal()">&times;</button>
+    <button class="absolute top-3 right-4 text-gray-600 hover:text-white text-2xl" onclick="closeModal()">&times;</button>
   </div>
 </div>
 
@@ -125,16 +125,16 @@
 
     const tbody = document.getElementById('clientTableBody');
     const row = document.createElement('tr');
-    row.className = 'transition-colors hover:bg-white/5';
+    row.className = 'transition-colors hover:bg-gray-50';
     row.innerHTML = `
-      <td class="px-4 py-3 font-medium text-slate-100">${name}</td>
-      <td class="px-4 py-3 text-slate-300">${email}</td>
-      <td class="px-4 py-3 text-slate-300">${phone}</td>
-      <td class="px-4 py-3 text-slate-300">${business}</td>
-      <td class="px-4 py-3 text-slate-400">${address}</td>
+      <td class="px-4 py-3 font-medium text-gray-900">${name}</td>
+      <td class="px-4 py-3 text-gray-700">${email}</td>
+      <td class="px-4 py-3 text-gray-700">${phone}</td>
+      <td class="px-4 py-3 text-gray-700">${business}</td>
+      <td class="px-4 py-3 text-gray-600">${address}</td>
       <td class="px-4 py-3 text-right">
         <button class="secondary-action px-3 py-1 mr-2" onclick="editClient(this)">Edit</button>
-        <button class="secondary-action px-3 py-1 text-rose-300 hover:text-white" onclick="deleteClient(this)">Delete</button>
+        <button class="secondary-action px-3 py-1 text-red-600 hover:text-red-700" onclick="deleteClient(this)">Delete</button>
       </td>
     `;
     tbody.appendChild(row);
