@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/modern-ui.css">
+    <script src="js/authStore.js"></script>
     
     <style>
         body { 
@@ -108,7 +109,7 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('isLoggedIn')) {
+            if (window.AuthStore.isLoggedIn()) {
                 window.location.href = 'dashboard.html';
                 return;
             }
@@ -133,8 +134,7 @@
                 loginButton.disabled = true;
                 try {
                     setTimeout(() => {
-                        localStorage.setItem('isLoggedIn', 'true');
-                        localStorage.setItem('currentUser', JSON.stringify({ name: 'User', email: email }));
+                        window.AuthStore.login({ name: 'User', email: email });
                         showMessage('Success! Redirecting...', 'success');
                         setTimeout(() => window.location.href = 'dashboard.html', 1500);
                     }, 500);
@@ -154,8 +154,7 @@
             });
         });
         function quickLogin() {
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('currentUser', JSON.stringify({ name: 'Rujan Basnet', email: 'demo@invoicepro.com' }));
+            window.AuthStore.login({ name: 'Rujan Basnet', email: 'demo@invoicepro.com' });
             showMessage('Quick login successful! Redirecting...', 'success');
             setTimeout(() => window.location.href = 'dashboard.html', 1500);
         }

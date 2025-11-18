@@ -1,3 +1,7 @@
+/**
+ * Sidebar - Client-side sidebar functionality
+ * Handles active link highlighting, logout button, and sidebar collapse/expand toggle
+ */
 (function () {
   const PLACEHOLDER_ID = 'main-sidebar';
   const HIGHLIGHT_CLASSES = ['bg-indigo-50', 'text-indigo-700', 'font-semibold'];

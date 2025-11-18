@@ -26,24 +26,15 @@ InvoicePro is a modern, client-side invoice management application built with va
 ├── reports.html            # Reporting interface
 ├── settings.html           # Application settings
 ├── login.html              # Login page
-├── sidebar.html            # Shared sidebar component
 ├── server.js               # Node.js static file server
 ├── package.json            # Node.js configuration
 ├── css/
 │   └── modern-ui.css       # Custom UI styles
 ├── js/
-│   ├── app.js              # Shared app functionality
-│   ├── clientAuth.js       # Client authentication
-│   ├── clientPortal.js     # Client portal functionality
-│   ├── dataStore.js        # LocalStorage data management
-│   ├── emailService.js     # Email integration
-│   ├── modalSystem.js      # Modal dialog system
-│   ├── paymentGateway.js   # Payment processing (Stripe/PayPal)
-│   ├── paymentManager.js   # Payment management
-│   ├── pdfGenerator.js     # PDF generation
-│   ├── reminderScheduler.js # Reminder scheduling
-│   ├── reminderSystem.js   # Reminder system
-│   └── sidebar.js          # Sidebar functionality
+│   ├── authStore.js        # Centralized auth state management
+│   ├── dataStore.js        # Centralized data storage (invoices, clients, etc.)
+│   ├── sidebar.js          # Sidebar functionality (highlighting, toggle)
+│   └── sidebarTemplate.js  # Centralized sidebar HTML template
 └── scripts/
     └── push_updates.sh     # Git deployment helper
 ```
@@ -114,12 +105,22 @@ The codebase includes references to backend API endpoints:
 These endpoints would need to be implemented if server-side functionality is required.
 
 ## Recent Changes (November 18, 2025)
+
+### Initial Setup
 - ✅ Added Node.js HTTP server for serving static files
 - ✅ Configured Replit workflow for automatic server startup
 - ✅ Set up proper cache control headers to prevent iframe caching issues
 - ✅ Created package.json for Node.js dependencies
 - ✅ Added .gitignore for Node.js artifacts
 - ✅ Configured deployment settings for static hosting
+
+### Code Quality Cleanup & Refactoring
+- ✅ **Centralized Sidebar Template**: Created js/sidebarTemplate.js to eliminate 7 duplicate sidebar HTML blocks across all pages, reducing maintenance burden and preventing drift
+- ✅ **Removed Dead Code**: Deleted 13 unused files (9 JS modules + 4 legacy root scripts) that were never loaded, reducing codebase footprint by ~45KB
+- ✅ **Fixed Branding Inconsistencies**: Updated login.html from InvoiceGen to InvoicePro, converted dark theme to light theme matching rest of app
+- ✅ **Consolidated Auth State**: Created js/authStore.js to centralize authentication state management (isLoggedIn, currentUser) instead of scattered localStorage calls
+- ✅ **Organized Data Management**: Maintained clear separation of concerns - DataStore for business data, AuthStore for auth state, UI state kept in respective modules
+- ✅ **Code Consistency**: Added header comments to all JS modules, ensured consistent code style and documentation across remaining 4 JavaScript files
 
 ## User Preferences
 None set yet.
