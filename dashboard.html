@@ -16,14 +16,12 @@
     }
   </style>
 </head>
-<body data-modern-ui class="antialiased">
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-gray-50 text-gray-900 antialiased">
 
   <div class="flex min-h-screen">
 
     <!-- Sidebar -->
-    <aside id="main-sidebar" data-active-nav="dashboard" class="hidden md:flex w-[19.5rem] shrink-0" aria-label="Sidebar"></aside>
-    <aside id="main-sidebar" data-active-nav="dashboard" class="w-64 bg-white shadow-md hidden md:flex flex-col"></aside>
+    <aside id="main-sidebar" data-active-nav="dashboard" class="transition-all duration-300" aria-label="Sidebar"></aside>
 
     <!-- Main content -->
     <main class="flex-1 flex flex-col">
@@ -38,16 +36,11 @@
           <input id="invoice-search" type="text" placeholder="Search invoices..." class="modern-input w-64" />
           <div class="relative">
             <button id="user-menu-button" class="w-11 h-11 rounded-full bg-gradient-to-br from-sky-400/80 via-indigo-500/80 to-purple-500/80 flex items-center justify-center text-white font-semibold shadow-lg shadow-sky-500/40 cursor-pointer">R</button>
-            <div id="user-menu" class="hidden absolute right-0 mt-3 w-56 rounded-2xl border border-white/10 bg-slate-900/90 backdrop-blur shadow-xl shadow-slate-900/40 py-3 z-30">
-              <div class="px-5 pb-3 text-sm">
-                <p class="font-semibold text-white">Rujan Basnet</p>
-                <p class="text-xs text-slate-400">Free Plan</p>
+            <div id="user-menu" class="hidden absolute right-0 mt-3 w-56 rounded-xl border border-gray-200 bg-white shadow-xl py-2 z-30">
+              <div class="px-4 pb-3 border-b border-gray-200">
+                <p class="font-semibold text-gray-900">Rujan Basnet</p>
+                <p class="text-xs text-gray-500">Free Plan</p>
               </div>
-              <hr class="border-slate-800/60">
-              <a href="settings.html" class="block px-5 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl">User Details</a>
-              <a href="subscription.html" class="block px-5 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl">Subscription</a>
-              <a href="#" id="logout-link" class="logout-button block px-5 py-2 text-sm font-medium text-rose-400 hover:text-rose-200 hover:bg-rose-500/10 rounded-xl">Logout</a>
-              <hr class="my-1">
               <a href="settings.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">User Details</a>
               <a href="subscription.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Subscription</a>
               <a href="#" id="logout-link" class="logout-button block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</a>
