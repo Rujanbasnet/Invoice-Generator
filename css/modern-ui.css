@@ -173,11 +173,11 @@ body {
   border-bottom: 1px solid var(--slate-200);
 }
 
-/* Sidebar - Dark Tech Theme with subtle green tint */
+/* Sidebar - Dark Tech Theme with darker green tint */
 .sidebar-container {
-  background: linear-gradient(180deg, #1a2f2a 0%, #1e3530 100%);
-  /* Lighter dark with green tint */
-  border-right: 1px solid #2a4540;
+  background: linear-gradient(180deg, #0a1f1a 0%, #0d2420 100%);
+  /* Darker green tint */
+  border-right: 1px solid #1a3530;
   color: #94a3b8;
 }
 
