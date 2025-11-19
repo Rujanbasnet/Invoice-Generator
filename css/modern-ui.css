@@ -243,10 +243,11 @@ body {
   display: none;
 }
 
-#main-sidebar.collapsed #sidebar-toggle i:before {
-  content: "\f0c9";
+/* Toggle button icons */
+#main-sidebar.collapsed .sidebar-toggle-icon:before {
+  content: "»";
 }
 
-#main-sidebar:not(.collapsed) #sidebar-toggle i:before {
-  content: "\f053";
+#main-sidebar:not(.collapsed) .sidebar-toggle-icon:before {
+  content: "«";
 }
