@@ -220,3 +220,33 @@ body {
   background: transparent !important;
   background-color: transparent !important;
 }
+
+/* Sidebar Collapsed State */
+#main-sidebar.collapsed {
+  width: 5rem;
+}
+
+#main-sidebar.collapsed .sidebar-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#main-sidebar.collapsed .sidebar-link {
+  justify-content: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+#main-sidebar.collapsed .sidebar-logo .sidebar-text {
+  display: none;
+}
+
+#main-sidebar.collapsed #sidebar-toggle i:before {
+  content: "\f0c9";
+}
+
+#main-sidebar:not(.collapsed) #sidebar-toggle i:before {
+  content: "\f053";
+}
