@@ -173,11 +173,11 @@ body {
   border-bottom: 1px solid var(--slate-200);
 }
 
-/* Sidebar - Dark Tech Theme */
+/* Sidebar - Dark Tech Theme with subtle green tint */
 .sidebar-container {
-  background: #0f172a;
-  /* Slate 900 */
-  border-right: 1px solid #1e293b;
+  background: linear-gradient(180deg, #1a2f2a 0%, #1e3530 100%);
+  /* Lighter dark with green tint */
+  border-right: 1px solid #2a4540;
   color: #94a3b8;
 }
 
