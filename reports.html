@@ -1,177 +1,141 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Reports — InvoicePro</title>
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Insights — InvoicePro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="css/modern-ui.css">
+  <script src="js/data-manager.js"></script>
   <script src="js/sidebarTemplate.js"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .animate-fadeIn { animation: fadeIn 0.3s ease-in-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .chart-bar {
+      transition: height 1s ease-out;
+    }
   </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-900 antialiased">
 
-<div class="flex min-h-screen">
+<body class="antialiased bg-slate-50">
 
-  <!-- Sidebar (Centralized Template) -->
-  <script>injectSidebar('reports');</script>
+  <div class="flex min-h-screen">
+    <script>injectSidebar('reports');</script>
 
-  <main class="flex-1 flex flex-col">
-
-    <header class="modern-topbar flex items-center justify-between px-8 py-5 sticky top-0 z-20">
-      <div>
-        <p class="modern-breadcrumb">Insights</p>
-        <h2 class="text-3xl font-semibold leading-tight mt-1">Reports</h2>
-      </div>
-      <div class="w-11 h-11 rounded-full bg-gradient-to-br from-sky-400/80 via-indigo-500/80 to-purple-500/80 flex items-center justify-center text-gray-900 font-semibold shadow-lg shadow-sky-500/40">R</div>
-    </header>
-
-    <section class="flex-1 overflow-y-auto animate-fadeIn">
-      <div class="max-w-7xl mx-auto px-6 py-10 space-y-8">
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div class="surface-card metric-card">
-            <h3>Total Revenue</h3>
-            <p class="metric-value">$12,500</p>
-            <span class="text-sm text-gray-600">Last 90 days</span>
-          </div>
-          <div class="surface-card metric-card">
-            <h3>Paid Invoices</h3>
-            <p class="metric-value text-emerald-300">34</p>
-            <span class="text-sm text-gray-600">Cleared invoices</span>
-          </div>
-          <div class="surface-card metric-card">
-            <h3>Pending Payments</h3>
-            <p class="metric-value text-amber-300">8</p>
-            <span class="text-sm text-gray-600">Awaiting action</span>
-          </div>
-          <div class="surface-card metric-card">
-            <h3>Overdue</h3>
-            <p class="metric-value text-rose-300">3</p>
-            <span class="text-sm text-gray-600">Needs follow-up</span>
-          </div>
+    <main class="flex-1 flex flex-col">
+      <header class="modern-topbar flex items-center justify-between px-8 py-4 sticky top-0 z-20">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800">AI Insights</h2>
+          <p class="text-sm text-slate-500">Revenue Growth & Projections</p>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          <div class="surface-card p-5 flex flex-col gap-3">
-            <h3 class="section-heading">Revenue (Last 30 Days)</h3>
-            <canvas id="revenueChart" class="w-full h-32"></canvas>
-          </div>
-          <div class="surface-card p-5 flex flex-col gap-3">
-            <h3 class="section-heading">Invoice Status</h3>
-            <canvas id="statusChart" class="w-full h-32"></canvas>
-          </div>
-          <div class="surface-card p-5">
-            <h3 class="section-heading mb-3">Quick Summary</h3>
-            <ul class="space-y-2 text-sm text-gray-700">
-              <li>💰 This Month’s Revenue: <span class="text-gray-900 font-semibold">$5,400</span></li>
-              <li>📩 Invoices Sent: <span class="text-gray-900 font-semibold">15</span></li>
-              <li>⏳ Pending: <span class="text-amber-300 font-semibold">4</span></li>
-              <li>⚠️ Overdue: <span class="text-rose-300 font-semibold">2</span></li>
-            </ul>
-          </div>
+        <div class="flex gap-2">
+          <span
+            class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold flex items-center gap-1">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generated
+          </span>
         </div>
+      </header>
 
-        <div class="surface-card px-6 py-7 overflow-x-auto">
-          <h3 class="section-heading mb-4">Recent Invoices</h3>
-          <table class="modern-table text-sm">
-            <thead>
-              <tr>
-                <th class="text-left">Invoice #</th>
-                <th class="text-left">Client</th>
-                <th class="text-left">Date</th>
-                <th class="text-left">Status</th>
-                <th class="text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr class="transition-colors hover:bg-gray-50">
-                <td class="px-4 py-3 font-medium text-gray-900">INV-00128</td>
-                <td class="px-4 py-3 text-gray-700">Acme Corp</td>
-                <td class="px-4 py-3 text-gray-600">2025-10-12</td>
-                <td class="px-4 py-3"><span class="status-pill" data-variant="paid">Paid</span></td>
-                <td class="px-4 py-3 text-right font-semibold text-gray-900">$540.00</td>
-              </tr>
-              <tr class="transition-colors hover:bg-gray-50">
-                <td class="px-4 py-3 font-medium text-gray-900">INV-00127</td>
-                <td class="px-4 py-3 text-gray-700">Blue Ocean LLC</td>
-                <td class="px-4 py-3 text-gray-600">2025-10-10</td>
-                <td class="px-4 py-3"><span class="status-pill" data-variant="pending">Pending</span></td>
-                <td class="px-4 py-3 text-right font-semibold text-gray-900">$1,240.00</td>
-              </tr>
-              <tr class="transition-colors hover:bg-gray-50">
-                <td class="px-4 py-3 font-medium text-gray-900">INV-00126</td>
-                <td class="px-4 py-3 text-gray-700">Skyline Builders</td>
-                <td class="px-4 py-3 text-gray-600">2025-10-08</td>
-                <td class="px-4 py-3"><span class="status-pill" data-variant="overdue">Overdue</span></td>
-                <td class="px-4 py-3 text-right font-semibold text-gray-900">$820.00</td>
-              </tr>
-            </tbody>
-          </table>
+      <section class="flex-1 overflow-y-auto p-8">
+        <div class="max-w-7xl mx-auto space-y-8">
+
+          <!-- Top Stats -->
+          <div class="grid grid-cols-3 gap-6">
+            <div class="surface-card p-6">
+              <p class="text-slate-500 text-sm font-medium">Projected Revenue (Next 30 Days)</p>
+              <h3 class="text-3xl font-bold text-slate-900 mt-2">$12,450.00</h3>
+              <p class="text-emerald-600 text-sm mt-2 font-medium"><i class="fa-solid fa-arrow-trend-up"></i> +15% vs
+                last month</p>
+            </div>
+            <div class="surface-card p-6">
+              <p class="text-slate-500 text-sm font-medium">Client Retention Rate</p>
+              <h3 class="text-3xl font-bold text-slate-900 mt-2">94%</h3>
+              <p class="text-emerald-600 text-sm mt-2 font-medium">Excellent</p>
+            </div>
+            <div class="surface-card p-6">
+              <p class="text-slate-500 text-sm font-medium">Average Payment Time</p>
+              <h3 class="text-3xl font-bold text-slate-900 mt-2">4.2 Days</h3>
+              <p class="text-emerald-600 text-sm mt-2 font-medium">-1.5 Days (Faster)</p>
+            </div>
+          </div>
+
+          <!-- Charts Section -->
+          <div class="grid grid-cols-2 gap-8">
+
+            <!-- Revenue Growth Chart -->
+            <div class="surface-card p-6">
+              <h3 class="text-lg font-bold text-slate-800 mb-6">Revenue Growth</h3>
+              <div class="h-64 flex items-end justify-between gap-4 px-4 border-b border-slate-200 pb-2">
+                <!-- Bars (Simulated) -->
+                <div class="w-full bg-emerald-100 rounded-t-lg relative group">
+                  <div class="absolute bottom-0 w-full bg-emerald-500 rounded-t-lg hover:bg-emerald-400 transition-all"
+                    style="height: 40%"></div>
+                  <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-slate-500">Aug</span>
+                </div>
+                <div class="w-full bg-emerald-100 rounded-t-lg relative group">
+                  <div class="absolute bottom-0 w-full bg-emerald-500 rounded-t-lg hover:bg-emerald-400 transition-all"
+                    style="height: 55%"></div>
+                  <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-slate-500">Sep</span>
+                </div>
+                <div class="w-full bg-emerald-100 rounded-t-lg relative group">
+                  <div class="absolute bottom-0 w-full bg-emerald-500 rounded-t-lg hover:bg-emerald-400 transition-all"
+                    style="height: 45%"></div>
+                  <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-slate-500">Oct</span>
+                </div>
+                <div class="w-full bg-emerald-100 rounded-t-lg relative group">
+                  <div class="absolute bottom-0 w-full bg-emerald-500 rounded-t-lg hover:bg-emerald-400 transition-all"
+                    style="height: 70%"></div>
+                  <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-slate-500">Nov</span>
+                </div>
+                <div class="w-full bg-emerald-100 rounded-t-lg relative group">
+                  <div
+                    class="absolute bottom-0 w-full bg-emerald-400 rounded-t-lg border-2 border-dashed border-emerald-600 opacity-70"
+                    style="height: 85%"></div>
+                  <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-slate-500 font-bold">Dec
+                    (Proj)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Recommendations -->
+            <div class="surface-card p-6">
+              <h3 class="text-lg font-bold text-slate-800 mb-4">AI Recommendations</h3>
+              <div class="space-y-4">
+                <div class="p-4 bg-amber-50 rounded-lg border border-amber-100">
+                  <div class="flex gap-3">
+                    <div class="mt-1 text-amber-600"><i class="fa-solid fa-lightbulb"></i></div>
+                    <div>
+                      <h4 class="font-bold text-amber-800 text-sm">Follow up with "TechCorp"</h4>
+                      <p class="text-amber-700 text-xs mt-1">They usually pay within 3 days, but Invoice #009 is now 5
+                        days pending.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                  <div class="flex gap-3">
+                    <div class="mt-1 text-blue-600"><i class="fa-solid fa-chart-line"></i></div>
+                    <div>
+                      <h4 class="font-bold text-blue-800 text-sm">Revenue Trend</h4>
+                      <p class="text-blue-700 text-xs mt-1">You are on track to beat last month's revenue by 15%.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
         </div>
+      </section>
+    </main>
+  </div>
 
-      </div>
-    </section>
-  </main>
-</div>
-
-<script src="js/sidebar.js"></script>
-
-<script>
-  const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
-  new Chart(ctxRevenue, {
-    type: 'line',
-    data: {
-      labels: ['Week 1','Week 2','Week 3','Week 4'],
-      datasets: [{
-        label: 'Revenue',
-        data: [1500, 2200, 1900, 2400],
-        borderColor: '#60A5FA',
-        backgroundColor: 'rgba(96,165,250,0.12)',
-        tension: 0.4,
-        fill: true,
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: '#60A5FA'
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false }, ticks: { color: '#94A3B8' } },
-        y: { grid: { color: 'rgba(148,163,184,0.18)', drawBorder: false }, beginAtZero: true, ticks: { color: '#94A3B8' } }
-      }
-    }
-  });
-
-  const ctxStatus = document.getElementById('statusChart').getContext('2d');
-  new Chart(ctxStatus, {
-    type: 'doughnut',
-    data: {
-      labels: ['Paid', 'Pending', 'Overdue'],
-      datasets: [{
-        data: [34, 8, 3],
-        backgroundColor: ['#22C55E','#F59E0B','#EF4444'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      cutout: '70%',
-      plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10, color: '#94A3B8' } }
-      }
-    }
-  });
-
-</script>
-
+  <script src="js/sidebar.js"></script>
 </body>
+
 </html>

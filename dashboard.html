@@ -1,227 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard — InvoicePro</title>
+  <title>Dashboard — InvoicePro AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="css/modern-ui.css">
+  <script src="js/data-manager.js"></script>
   <script src="js/sidebarTemplate.js"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    #user-menu {
-        transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    /* Custom Dashboard Gradients */
+    .metric-card-tech {
+      background: white;
+      border: 1px solid var(--slate-200);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card-tech::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+      border-radius: 0 0 0 100%;
     }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 antialiased">
+
+<body class="antialiased bg-slate-50">
 
   <div class="flex min-h-screen">
-
-    <!-- Sidebar (Centralized Template) -->
     <script>injectSidebar('dashboard');</script>
 
-    <!-- Main content -->
     <main class="flex-1 flex flex-col">
 
       <!-- Topbar -->
-      <header class="modern-topbar flex items-center justify-between px-8 py-5 sticky top-0 z-20">
+      <header class="modern-topbar flex items-center justify-between px-8 py-4 sticky top-0 z-20">
         <div>
-          <h2 class="text-3xl font-semibold leading-tight">Dashboard</h2>
+          <h2 class="text-2xl font-bold text-slate-800">Dashboard</h2>
+          <p class="text-sm text-slate-500">Overview & AI Analytics</p>
         </div>
         <div class="flex items-center gap-4">
-          <input id="invoice-search" type="text" placeholder="Search invoices..." class="modern-input w-64" />
           <div class="relative">
-            <button id="user-menu-button" class="w-11 h-11 rounded-full bg-gradient-to-br from-sky-400/80 via-indigo-500/80 to-purple-500/80 flex items-center justify-center text-white font-semibold shadow-lg shadow-sky-500/40 cursor-pointer">R</button>
-            <div id="user-menu" class="hidden absolute right-0 mt-3 w-56 rounded-xl border border-gray-200 bg-white shadow-xl py-2 z-30">
-              <div class="px-4 pb-3 border-b border-gray-200">
-                <p class="font-semibold text-gray-900">Rujan Basnet</p>
-                <p class="text-xs text-gray-500">Free Plan</p>
-              </div>
-              <a href="settings.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">User Details</a>
-              <a href="subscription.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Subscription</a>
-              <a href="#" id="logout-link" class="logout-button block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</a>
-            </div>
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" placeholder="Search invoices..." class="modern-input pl-10 w-64" />
           </div>
+          <button
+            class="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+            R
+          </button>
         </div>
       </header>
 
-      <!-- Dashboard content -->
-      <section class="flex-1 overflow-y-auto">
-        <div class="max-w-7xl mx-auto px-6 py-10 space-y-10">
+      <section class="flex-1 overflow-y-auto p-8">
+        <div class="max-w-7xl mx-auto space-y-8">
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <button onclick="filterInvoices('all')" class="surface-card metric-card text-left">
-            <h3>Total Invoices</h3>
-            <p class="metric-value" id="totalInvoices">3</p>
-            <span class="text-sm text-gray-600">Across all statuses</span>
-          </button>
+          <!-- Metrics Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-          <button onclick="filterInvoices('pending')" class="surface-card metric-card text-left">
-            <h3>Pending</h3>
-            <p class="metric-value text-amber-300" id="pendingInvoices">1</p>
-            <span class="text-sm text-gray-600">Awaiting payment</span>
-          </button>
+            <!-- Revenue -->
+            <a href="invoices.html?status=paid"
+              class="surface-card p-6 group hover:border-emerald-400 transition-all cursor-pointer relative overflow-hidden">
+              <div class="flex justify-between items-start mb-4">
+                <div
+                  class="p-3 rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <i class="fa-solid fa-sack-dollar text-xl"></i>
+                </div>
+                <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+12.5%</span>
+              </div>
+              <p class="text-slate-500 text-sm font-medium">Total Revenue</p>
+              <h3 class="text-2xl font-bold text-slate-900 mt-1" id="totalRevenue">$0.00</h3>
+            </a>
 
-          <button onclick="filterInvoices('overdue')" class="surface-card metric-card text-left">
-            <h3>Overdue</h3>
-            <p class="metric-value text-rose-300" id="overdueInvoices">1</p>
-            <span class="text-sm text-gray-600">Needs attention</span>
-          </button>
+            <!-- Pending -->
+            <a href="invoices.html?status=pending"
+              class="surface-card p-6 group hover:border-amber-400 transition-all cursor-pointer relative overflow-hidden">
+              <div class="flex justify-between items-start mb-4">
+                <div
+                  class="p-3 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                  <i class="fa-solid fa-hourglass-half text-xl"></i>
+                </div>
+                <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">Pending</span>
+              </div>
+              <p class="text-slate-500 text-sm font-medium">Pending Payment</p>
+              <h3 class="text-2xl font-bold text-slate-900 mt-1" id="pendingAmount">$0.00</h3>
+            </a>
 
-          <button onclick="filterInvoices('paid')" class="surface-card metric-card text-left">
-            <h3>Paid</h3>
-            <p class="metric-value text-emerald-300" id="paidInvoices">1</p>
-            <span class="text-sm text-gray-600">Cleared invoices</span>
-          </button>
-        </div>
+            <!-- Overdue -->
+            <a href="invoices.html?status=overdue"
+              class="surface-card p-6 group hover:border-rose-400 transition-all cursor-pointer relative overflow-hidden">
+              <div class="flex justify-between items-start mb-4">
+                <div
+                  class="p-3 rounded-lg bg-rose-50 text-rose-600 group-hover:bg-rose-500 group-hover:text-white transition-colors">
+                  <i class="fa-solid fa-circle-exclamation text-xl"></i>
+                </div>
+                <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-full">Action Needed</span>
+              </div>
+              <p class="text-slate-500 text-sm font-medium">Overdue Invoices</p>
+              <h3 class="text-2xl font-bold text-slate-900 mt-1" id="overdueAmount">$0.00</h3>
+            </a>
 
-        <!-- Reports Shortcut -->
-        <div class="surface-card surface-card--soft px-6 py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div class="space-y-1">
-            <h3 class="text-xl font-semibold text-gray-900">Reports &amp; Insights</h3>
-            <p class="text-gray-600 text-sm max-w-xl">View revenue, client activity, and performance trends powered by real-time data.</p>
+            <!-- Clients -->
+            <a href="clients.html"
+              class="surface-card p-6 group hover:border-blue-400 transition-all cursor-pointer relative overflow-hidden">
+              <div class="flex justify-between items-start mb-4">
+                <div
+                  class="p-3 rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                  <i class="fa-solid fa-users text-xl"></i>
+                </div>
+              </div>
+              <p class="text-slate-500 text-sm font-medium">Active Clients</p>
+              <h3 class="text-2xl font-bold text-slate-900 mt-1" id="totalClients">0</h3>
+            </a>
+
           </div>
-          <a href="reports.html" class="primary-action">
-            <span>View Reports</span>
-            <span aria-hidden="true" class="text-lg">↗</span>
-          </a>
-        </div>
 
-        <!-- Recent Invoices Table -->
-        <div class="surface-card px-6 py-7 overflow-x-auto">
-          <div class="flex items-center justify-between mb-5">
-            <h3 class="text-lg font-semibold">Recent Invoices</h3>
-            <a href="invoices.html" class="secondary-action">View all</a>
+          <!-- Main Content Split -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Recent Invoices -->
+            <div class="lg:col-span-2 surface-card p-6">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-bold text-slate-800">Recent Invoices</h3>
+                <a href="invoices.html" class="text-sm font-medium text-emerald-600 hover:text-emerald-700">View All <i
+                    class="fa-solid fa-arrow-right ml-1"></i></a>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="modern-table text-sm">
+                  <thead>
+                    <tr>
+                      <th class="text-left pl-4">Invoice</th>
+                      <th class="text-left">Client</th>
+                      <th class="text-left">Date</th>
+                      <th class="text-left">Amount</th>
+                      <th class="text-left">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="invoiceTableBody">
+                    <!-- Injected -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="space-y-6">
+              <div class="surface-card p-6 bg-gradient-to-br from-slate-900 to-slate-800 text-white border-none">
+                <h3 class="text-lg font-bold mb-2">Quick Create</h3>
+                <p class="text-slate-400 text-sm mb-6">Generate a new invoice in seconds with AI assistance.</p>
+                <a href="create-invoice.html"
+                  class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-colors shadow-lg shadow-emerald-500/20">
+                  <i class="fa-solid fa-plus"></i> New Invoice
+                </a>
+                <button onclick="window.location.href='clients.html'"
+                  class="w-full mt-3 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium flex items-center justify-center gap-2 transition-colors">
+                  <i class="fa-solid fa-user-plus"></i> Add Client
+                </button>
+              </div>
+
+              <div class="surface-card p-6">
+                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">System Status</h3>
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-slate-500"><i class="fa-solid fa-server mr-2"></i> Server</span>
+                    <span class="text-emerald-600 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>
+                      Online</span>
+                  </div>
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-slate-500"><i class="fa-solid fa-envelope mr-2"></i> Email Service</span>
+                    <span class="text-emerald-600 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>
+                      Active</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <table class="modern-table text-sm">
-            <thead>
-              <tr>
-                <th class="px-4 py-3 text-left">Invoice #</th>
-                <th class="px-4 py-3 text-left">Client</th>
-                <th class="px-4 py-3 text-left">Date</th>
-                <th class="px-4 py-3 text-left">Amount</th>
-                <th class="px-4 py-3 text-left">Status</th>
-                <th class="px-4 py-3 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="invoiceTableBody" class="divide-y divide-gray-200">
-              <!-- JS will populate this dynamically -->
-            </tbody>
-          </table>
-        </div>
+
         </div>
       </section>
     </main>
   </div>
 
   <script src="js/sidebar.js"></script>
-
-  <!-- Functional Scripts -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- DATA ---
-        const invoices = [
-            { id: 'INV-00128', client: 'Acme Corp', date: '12 Oct 2025', amount: '$540.00', status: 'Paid' },
-            { id: 'INV-00127', client: 'Blue Ocean LLC', date: '10 Oct 2025', amount: '$1,240.00', status: 'Pending' },
-            { id: 'INV-00126', client: 'Skyline Builders', date: '08 Oct 2025', amount: '$820.00', status: 'Overdue' },
-        ];
+      const invoices = DataManager.getInvoices();
+      const clients = DataManager.getClients();
 
-        // --- ELEMENTS ---
-        const tbody = document.getElementById('invoiceTableBody');
-        const userMenuButton = document.getElementById('user-menu-button');
-        const userMenu = document.getElementById('user-menu');
-        const searchInput = document.getElementById('invoice-search');
+      // Metrics
+      const totalRev = invoices.filter(i => i.status === 'Paid').reduce((acc, curr) => acc + curr.amount, 0);
+      const pending = invoices.filter(i => i.status === 'Pending').reduce((acc, curr) => acc + curr.amount, 0);
+      const overdue = invoices.filter(i => i.status === 'Overdue').reduce((acc, curr) => acc + curr.amount, 0);
 
-        // --- FUNCTIONS ---
-        const renderTable = (filteredInvoices) => {
-            tbody.innerHTML = '';
-            if (filteredInvoices.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-gray-500">No invoices found.</td></tr>';
-                return;
-            }
-
-            filteredInvoices.forEach(inv => {
-                const variant = inv.status === 'Paid' ? 'paid' : inv.status === 'Pending' ? 'pending' : 'overdue';
-                const row = document.createElement('tr');
-
-                const actionsHTML = `
-                    <button class="secondary-action px-3 py-1 text-xs" onclick="viewInvoice('${inv.id}')" title="View">
-                      <i class="fa-solid fa-eye"></i>
-                    </button>
-                    ${inv.status !== 'Paid' ? `<button class="secondary-action px-3 py-1 text-xs" onclick=\"resendInvoice('${inv.id}')\" title=\"Resend\"><i class=\"fa-solid fa-paper-plane\"></i></button>` : ''}
-                    <button class="secondary-action px-3 py-1 text-xs" onclick="downloadInvoice('${inv.id}')" title="Download">
-                      <i class="fa-solid fa-download"></i>
-                    </button>
-                `;
-
-                row.innerHTML = `
-                    <td class="px-4 py-3 font-medium text-gray-900">${inv.id}</td>
-                    <td class="px-4 py-3 text-gray-700">${inv.client}</td>
-                    <td class="px-4 py-3 text-gray-600">${inv.date}</td>
-                    <td class="px-4 py-3 text-gray-900">${inv.amount}</td>
-                    <td class="px-4 py-3">
-                        <span class="status-pill" data-variant="${variant}">${inv.status}</span>
-                    </td>
-                    <td class="px-4 py-3 flex gap-2 items-center text-gray-700">${actionsHTML}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        };
-
-        // --- EVENT LISTENERS ---
-        // Toggle user menu
-        userMenuButton.addEventListener('click', () => {
-            userMenu.classList.toggle('hidden');
-        });
-
-        // Close user menu if clicking outside
-        document.addEventListener('click', (event) => {
-            if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
-                userMenu.classList.add('hidden');
-            }
-        });
-
-        // Search functionality
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredInvoices = invoices.filter(inv => 
-                inv.id.toLowerCase().includes(searchTerm) ||
-                inv.client.toLowerCase().includes(searchTerm) ||
-                inv.status.toLowerCase().includes(searchTerm)
-            );
-            renderTable(filteredInvoices);
-        });
-
-        // --- INITIAL RENDER ---
-        renderTable(invoices);
-    });
-
-    // --- GLOBAL ACTION FUNCTIONS ---
-    function filterInvoices(status) {
-      window.location.href = `invoices.html?filter=${status}`;
+      document.getElementById('totalRevenue').textContent = DataManager.formatMoney(totalRev);
+      document.getElementById('pendingAmount').textContent = DataManager.formatMoney(pending);
+      document.getElementById('overdueAmount').textContent = DataManager.formatMoney(overdue);
+      document.getElementById('totalClients').textContent = clients.length;
+      <link rel="stylesheet" href="css/modern-ui.css">
+        <script src="js/data-manager.js"></script>
+  <script src="js/sidebarTemplate.js"></script>
+  <style>
+    /* Custom Dashboard Gradients */
+    .metric-card-tech {
+      background: white;
+      border: 1px solid var(--slate-200);
+      position: relative;
+      overflow: hidden;
     }
 
-    function viewInvoice(id) {
-        alert(`Viewing Invoice: ${id}`);
-        // In a real app, you'd navigate: window.location.href = `invoice-details.html?id=${id}`;
+    .metric-card-tech::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+      border-radius: 0 0 0 100%;
     }
+  </style>
+  </head>
 
-    function resendInvoice(id) {
-        alert(`Resending Invoice: ${id}`);
-        // In a real app, this would trigger an API call.
-    }
+  <body class="antialiased bg-slate-50">
 
-    function downloadInvoice(id) {
-        alert(`Downloading Invoice: ${id}`);
-        // In a real app, this would trigger a PDF generation and download.
-    }
-  </script>
+    <div class="flex min-h-screen">
+      <script>injectSidebar('dashboard');</script>
 
-</body>
-</html>
+      <main class="flex-1 flex flex-col">
 
+        <!-- Topbar -->
+        <header class="modern-topbar flex items-center justify-between px-8 py-4 sticky top-0 z-20">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800">Dashboard</h2>
+            <p class="text-sm text-slate-500">Overview & AI Analytics</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input type="text" placeholder="Search invoices..." class="modern-input pl-10 w-64" />
+            </div>
+            <button
+              class="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+              R
+            </button>
+          </div>
+        </header>
+
+        <section class="flex-1 overflow-y-auto p-8">
+          <div class="max-w-7xl mx-auto space-y-8">
+
+            <!-- Metrics Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+              <!-- Revenue -->
+              <a href="invoices.html?status=paid"
+                class="surface-card p-6 group hover:border-emerald-400 transition-all cursor-pointer relative overflow-hidden">
+                <div class="flex justify-between items-start mb-4">
+                  <div class="p-3 rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover

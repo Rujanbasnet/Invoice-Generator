@@ -1,258 +1,284 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Create Invoice — InvoicePro</title>
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Invoice — InvoicePro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="css/modern-ui.css">
+  <script src="js/data-manager.js"></script>
   <script src="js/sidebarTemplate.js"></script>
-  <style> body { font-family: 'Inter', sans-serif; } </style>
+  <script src="js/client-modal.js"></script>
+  <style>
+    /* A4 Paper Preview */
+    .a4-paper {
+      width: 210mm;
+      min-height: 297mm;
+      background: white;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+      padding: 20mm;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #334155;
+    }
+
+    @media (max-width: 1280px) {
+      .a4-paper {
+        width: 100%;
+        padding: 20px;
+        min-height: auto;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-900 antialiased">
+
+<body class="antialiased bg-slate-50">
 
   <div class="flex min-h-screen">
-
-    <!-- Sidebar (Centralized Template) -->
     <script>injectSidebar('create-invoice');</script>
 
-    <main class="flex-1 flex flex-col">
-
-      <header class="modern-topbar flex items-center justify-between px-8 py-5 sticky top-0 z-20">
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+      <!-- Topbar -->
+      <header
+        class="modern-topbar flex items-center justify-between px-8 py-4 sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200">
         <div>
-          <p class="modern-breadcrumb">Billing</p>
-          <h2 class="text-3xl font-semibold leading-tight mt-1">Create Invoice</h2>
+          <h2 class="text-xl font-bold text-slate-800">New Invoice</h2>
         </div>
-        <div class="flex items-center gap-4">
-          <input id="globalSearch" type="text" placeholder="Search..." class="modern-input w-64" />
-          <div class="w-11 h-11 rounded-full bg-gradient-to-br from-sky-400/80 via-indigo-500/80 to-purple-500/80 flex items-center justify-center text-white font-semibold shadow-lg shadow-sky-500/40">R</div>
+        <div class="flex gap-3">
+          <button id="downloadBtn" class="secondary-action">
+            <i class="fa-solid fa-download"></i> Download
+          </button>
+          <button id="saveDraftBtn" class="secondary-action">Save Draft</button>
+          <button id="sendInvoiceBtn" class="primary-action">
+            <i class="fa-solid fa-paper-plane"></i> Send Invoice
+          </button>
         </div>
       </header>
 
-      <section class="flex-1 overflow-y-auto">
-        <div class="max-w-7xl mx-auto px-6 py-10">
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Split View Content -->
+      <div class="flex-1 flex overflow-hidden">
 
-        <div class="lg:col-span-2 space-y-6">
+        <!-- LEFT: Editor (Scrollable) -->
+        <div class="w-1/2 overflow-y-auto p-8 border-r border-slate-200 bg-white">
+          <div class="max-w-2xl mx-auto space-y-8">
 
-          <div class="surface-card p-6 space-y-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <h3 class="section-heading">Invoice Details</h3>
-              <div class="flex flex-wrap gap-3">
-                <button id="saveDraftBtn" class="secondary-action px-5">Save Draft</button>
-                <button id="sendBtn" class="primary-action px-6">Send Invoice</button>
+            <!-- Logo Upload -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-slate-700">Company Logo</label>
+              <div class="flex items-center gap-4">
+                <div id="logoPreviewBox"
+                  class="w-16 h-16 rounded-lg border border-dashed border-slate-300 flex items-center justify-center bg-slate-50 text-slate-400 overflow-hidden">
+                  <i class="fa-solid fa-image"></i>
+                </div>
+                <label class="secondary-action cursor-pointer">
+                  Upload Logo
+                  <input type="file" id="logoInput" class="hidden" accept="image/*" />
+                </label>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div class="space-y-2">
-                <label class="muted-label">Client</label>
-                <select id="clientSelect" class="w-full">
-                  <option value="">— Select client —</option>
-                </select>
-                <div class="flex gap-3">
-                  <input id="clientSearch" type="text" placeholder="Search / Add client..." class="flex-1" />
-                  <button id="addClientBtn" class="secondary-action px-4">+ Client</button>
+            <!-- Invoice Details -->
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Invoice No.</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">#</span>
+                  <input type="text" id="invoiceId" class="modern-input pl-7" />
                 </div>
               </div>
-
-              <div class="space-y-2">
-                <label class="muted-label">Invoice #</label>
-                <input id="invoiceNumber" type="text" class="w-full" value="#INV-0001" />
-              </div>
-
-              <div class="space-y-2">
-                <label class="muted-label">Invoice Date</label>
-                <input id="invoiceDate" type="date" class="w-full" />
-              </div>
-
-              <div class="space-y-2">
-                <label class="muted-label">Due Date</label>
-                <input id="dueDate" type="date" class="w-full" />
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Recurring?</label>
+                <label class="relative inline-flex items-center cursor-pointer mt-2">
+                  <input type="checkbox" id="recurringToggle" class="sr-only peer">
+                  <div
+                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600">
+                  </div>
+                  <span class="ml-3 text-sm font-medium text-slate-700">Repeat Monthly</span>
+                </label>
               </div>
             </div>
-          </div>
 
-          <div class="surface-card p-6 space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <h3 class="section-heading">Line Items</h3>
-              <div class="text-sm text-gray-600">Tip: press <kbd class="px-2 py-1 rounded-lg bg-white/10 text-xs">Tab</kbd> to move across fields</div>
+            <!-- Client & Dates -->
+            <div class="grid grid-cols-2 gap-6">
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Bill To</label>
+                <select id="clientSelect" class="modern-input">
+                  <option value="">Select Client...</option>
+                  <option value="new" class="font-bold text-emerald-600">+ Add New Client</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Issue Date</label>
+                <input type="date" id="issueDate" class="modern-input" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Due Date</label>
+                <input type="date" id="dueDate" class="modern-input" />
+              </div>
             </div>
 
-            <div class="overflow-x-auto glass-scroll">
-              <table id="itemsTable" class="modern-table text-sm">
-                <thead>
-                  <tr>
-                    <th class="text-left">Description</th>
-                    <th class="text-center w-24">Qty</th>
-                    <th class="text-center w-32">Unit</th>
-                    <th class="text-right w-32">Price</th>
-                    <th class="text-right w-32">Line Total</th>
-                    <th class="text-center w-12"></th>
-                  </tr>
-                </thead>
-                <tbody id="itemRows" class="divide-y divide-gray-200">
-                  <tr class="item-row">
-                    <td class="px-4 py-3"><input class="desc w-full" placeholder="Item description" /></td>
-                    <td class="px-4 py-3 text-center"><input type="number" class="qty w-full" value="1" min="0" /></td>
-                    <td class="px-4 py-3 text-center"><input class="unit w-full" placeholder="pcs/hr" /></td>
-                    <td class="px-4 py-3 text-right"><input type="number" step="0.01" class="price w-full text-right" value="0" min="0" /></td>
-                    <td class="px-4 py-3 text-right text-gray-800 total">$0.00</td>
-                    <td class="px-4 py-3 text-center"><button class="removeRow text-rose-400 hover:text-rose-200" type="button">✖</button></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="flex justify-end">
-              <button id="addItemBtn" class="primary-action">+ Add Item</button>
-            </div>
-          </div>
+            <hr class="border-slate-100" />
 
-          <div class="surface-card p-6 space-y-4">
-            <h3 class="section-heading">Notes &amp; Terms</h3>
-            <textarea id="notes" class="w-full h-32" placeholder="Notes visible on PDF"></textarea>
-          </div>
+            <!-- Line Items -->
+            <div class="space-y-4">
+              <div class="flex justify-between items-center">
+                <h3 class="font-bold text-slate-800">Items</h3>
+              </div>
 
+              <!-- Add Item Form -->
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                <div class="grid grid-cols-12 gap-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <div class="col-span-6">Description</div>
+                  <div class="col-span-2 text-center">Qty</div>
+                  <div class="col-span-2 text-right">Price</div>
+                  <div class="col-span-2 text-right">Total</div>
+                </div>
+                <div class="grid grid-cols-12 gap-3">
+                  <div class="col-span-6">
+                    <input type="text" id="newItemDesc" placeholder="Description" class="modern-input text-sm" />
+                  </div>
+                  <div class="col-span-2">
+                    <input type="number" id="newItemQty" placeholder="Qty" value="1" min="1"
+                      class="modern-input text-sm text-center" />
+                  </div>
+                  <div class="col-span-2">
+                    <input type="number" id="newItemPrice" placeholder="Price" min="0" step="0.01"
+                      class="modern-input text-sm text-right" />
+                  </div>
+                  <div class="col-span-2">
+                    <input type="text" id="newItemTotal" placeholder="Total" readonly
+                      class="modern-input text-sm text-right bg-slate-100 text-slate-500" />
+                  </div>
+                </div>
+                <button id="addItemBtn"
+                  class="w-full py-2 bg-white border border-slate-300 text-slate-600 font-medium rounded-lg hover:bg-slate-50 hover:text-emerald-600 transition-colors text-sm flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-plus"></i> Add Item
+                </button>
+              </div>
+
+              <!-- Items List (Mini View) -->
+              <div id="editorItemsList" class="space-y-2">
+                <!-- Items added here -->
+              </div>
+            </div>
+
+            <!-- Discount & Tax -->
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Discount (%)</label>
+                <input type="number" id="invoiceDiscount" placeholder="0" min="0" max="100" class="modern-input" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Tax Rate (%)</label>
+                <input type="number" id="invoiceTax" placeholder="0" min="0" max="100" class="modern-input" />
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Notes / Terms</label>
+              <textarea id="invoiceNotes" rows="3" class="modern-input"
+                placeholder="Payment terms, thank you note, etc."></textarea>
+            </div>
+
+          </div>
         </div>
 
-        <div class="space-y-6">
+        <!-- RIGHT: Live Preview (Scrollable) -->
+        <div class="w-1/2 bg-slate-100 overflow-y-auto p-8 flex justify-center">
+          <div id="invoicePreview" class="a4-paper flex flex-col">
 
-          <div class="surface-card p-6 space-y-4">
-            <h3 class="section-heading">Summary</h3>
-            <div class="space-y-3 text-sm">
-              <div class="summary-line"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
-              <div class="summary-line"><span>Discount</span><strong id="discount">$0.00</strong></div>
-              <div class="summary-line"><span>Tax</span><strong id="tax">$0.00</strong></div>
-              <hr class="border-slate-700/40">
-              <div class="summary-line text-lg font-semibold"><span>Total</span><strong id="grandTotal">$0.00</strong></div>
+            <!-- Header -->
+            <div class="flex justify-between items-start mb-12">
+              <div>
+                <div id="previewLogo" class="mb-4 hidden">
+                  <img src="" alt="Logo" class="h-12 object-contain" />
+                </div>
+                <h1 class="text-3xl font-bold text-slate-900">INVOICE</h1>
+                <p class="text-slate-500 mt-1">#<span id="previewId">INV-001</span></p>
+              </div>
+              <div class="text-right">
+                <h3 class="font-bold text-slate-900">Your Company Name</h3>
+                <p class="text-slate-500 text-sm">123 Business Rd<br>City, State 12345</p>
+              </div>
             </div>
-          </div>
 
-          <div class="surface-card p-6 space-y-4">
-            <h3 class="section-heading">Actions</h3>
-            <div class="space-y-3">
-              <button id="previewPdfBtn" class="secondary-action w-full">Preview PDF</button>
-              <button id="downloadBtn" class="primary-action w-full">Download</button>
+            <!-- Client & Dates -->
+            <div class="flex justify-between mb-12">
+              <div>
+                <p class="text-xs font-bold text-slate-400 uppercase mb-2">Bill To</p>
+                <div id="previewClient">
+                  <p class="text-slate-400 italic">Select a client...</p>
+                </div>
+              </div>
+              <div class="text-right space-y-2">
+                <div>
+                  <p class="text-xs font-bold text-slate-400 uppercase">Date</p>
+                  <p id="previewDate" class="font-medium text-slate-900">-</p>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-400 uppercase">Due Date</p>
+                  <p id="previewDueDate" class="font-medium text-slate-900">-</p>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div class="surface-card p-6 space-y-4">
-            <h3 class="section-heading">Your Company</h3>
-            <textarea class="w-full h-32" placeholder="Company details (address, etc.)"></textarea>
-          </div>
+            <!-- Table -->
+            <table class="w-full mb-8">
+              <thead>
+                <tr class="border-b-2 border-slate-100">
+                  <th class="text-left py-3 font-bold text-slate-600">Description</th>
+                  <th class="text-center py-3 font-bold text-slate-600 w-20">Qty</th>
+                  <th class="text-right py-3 font-bold text-slate-600 w-32">Price</th>
+                  <th class="text-right py-3 font-bold text-slate-600 w-32">Total</th>
+                </tr>
+              </thead>
+              <tbody id="previewItemsBody">
+                <!-- Items injected -->
+              </tbody>
+            </table>
 
+            <!-- Totals -->
+            <div class="flex justify-end mb-12">
+              <div class="w-64 space-y-2">
+                <div class="flex justify-between text-slate-500">
+                  <span>Subtotal</span>
+                  <span id="previewSubtotal">$0.00</span>
+                </div>
+                <div class="flex justify-between text-slate-500">
+                  <span>Discount</span>
+                  <span id="previewDiscount">-$0.00</span>
+                </div>
+                <div class="flex justify-between text-slate-500">
+                  <span>Tax</span>
+                  <span id="previewTax">$0.00</span>
+                </div>
+                <div class="flex justify-between text-xl font-bold text-slate-900 pt-2 border-t border-slate-200">
+                  <span>Total</span>
+                  <span id="previewTotal">$0.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-auto pt-8 border-t border-slate-100">
+              <p class="font-bold text-slate-800 mb-2">Notes</p>
+              <p id="previewNotes" class="text-sm text-slate-500">Thank you for your business!</p>
+            </div>
+
+          </div>
         </div>
+
       </div>
-    </div>
-      </section>
     </main>
   </div>
 
   <script src="js/sidebar.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Load sample clients first
-      const clients = ['Acme Corp', 'Blue Ocean LLC', 'Skyline Builders'];
-      const select = document.getElementById('clientSelect');
-      clients.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
-        select.appendChild(opt);
-      });
-
-      // Set default dates (today and 30 days later)
-      const today = new Date('2025-10-17');
-      document.getElementById('invoiceDate').valueAsDate = today;
-      document.getElementById('dueDate').valueAsDate = new Date(today.getTime() + 30 * 86400000);
-
-    });
-  </script>
-
-  <script>
-    function $(sel, ctx) { return (ctx || document).querySelector(sel); }
-    function $all(sel, ctx) { return Array.from((ctx || document).querySelectorAll(sel)); }
-    function formatMoney(n) { return '$' + Number(n || 0).toFixed(2); }
-
-    const itemRows = $('#itemRows');
-    const addItemBtn = $('#addItemBtn');
-    const subtotalEl = $('#subtotal');
-    const taxEl = $('#tax');
-    const discountEl = $('#discount');
-    const grandTotalEl = $('#grandTotal');
-
-    function addItem(data = {}) {
-      const tr = document.createElement('tr');
-      const qty = Number(data.qty ?? 1);
-      const price = Number(data.price ?? 0);
-      tr.className = 'item-row';
-      tr.innerHTML = `
-        <td class="px-4 py-3"><input class="desc w-full" placeholder="Item description" value="${data.desc||''}" /></td>
-        <td class="px-4 py-3 text-center"><input type="number" class="qty w-full" value="${qty}" min="0" /></td>
-        <td class="px-4 py-3 text-center"><input class="unit w-full" placeholder="pcs/hr" value="${data.unit||''}" /></td>
-        <td class="px-4 py-3 text-right"><input type="number" step="0.01" class="price w-full text-right" value="${price}" min="0" /></td>
-        <td class="px-4 py-3 text-right text-gray-800 total">${formatMoney(qty * price)}</td>
-        <td class="px-4 py-3 text-center"><button class="removeRow text-rose-400 hover:text-rose-200" type="button">✖</button></td>
-      `;
-      itemRows.appendChild(tr);
-      attachRowListeners(tr);
-      calculateTotals();
-      return tr;
-    }
-
-    function attachRowListeners(row) {
-      $all('.qty, .price, .desc, .unit', row).forEach(el => {
-        el.addEventListener('input', calculateTotals);
-      });
-      row.querySelector('.removeRow').addEventListener('click', () => {
-        row.remove();
-        calculateTotals();
-      });
-    }
-
-    function calculateTotals() {
-      let subtotal = 0;
-      $all('#itemRows tr.item-row').forEach(row => {
-        const qty = Number(row.querySelector('.qty').value || 0);
-        const price = Number(row.querySelector('.price').value || 0);
-        const lineTotal = qty * price;
-        row.querySelector('.total').textContent = formatMoney(lineTotal);
-        subtotal += lineTotal;
-      });
-      const tax = subtotal * 0.10;
-      const discount = 0; // Add discount input later if needed
-      const total = subtotal + tax - discount;
-      subtotalEl.textContent = formatMoney(subtotal);
-      discountEl.textContent = formatMoney(discount);
-      taxEl.textContent = formatMoney(tax);
-      grandTotalEl.textContent = formatMoney(total);
-    }
-
-    // Init items
-    addItemBtn.addEventListener('click', () => addItem());
-    $all('#itemRows tr').forEach(attachRowListeners);
-    calculateTotals();
-
-    // Button handlers
-    $('#saveDraftBtn').addEventListener('click', () => alert('Draft saved!'));
-    $('#sendBtn').addEventListener('click', () => alert('Invoice sent!'));
-    $('#previewPdfBtn').addEventListener('click', () => alert('PDF preview!'));
-    $('#downloadBtn').addEventListener('click', () => alert('Downloaded!'));
-    $('#addClientBtn').addEventListener('click', () => {
-      const name = prompt('New client name');
-      if (name) {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = name;
-        $('#clientSelect').appendChild(opt);
-        $('#clientSelect').value = name;
-      }
-    });
-  </script>
-
+  <script src="js/create-invoice.js"></script>
 </body>
-</html>
 
+</html>

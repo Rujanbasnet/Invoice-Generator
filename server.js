@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 5000;
+const PORT = 5001;
 const HOST = '0.0.0.0';
 
 const MIME_TYPES = {
@@ -34,7 +34,7 @@ const server = http.createServer((req, res) => {
   fs.readFile(filePath, (error, content) => {
     if (error) {
       if (error.code === 'ENOENT') {
-        res.writeHead(404, { 
+        res.writeHead(404, {
           'Content-Type': 'text/html',
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
@@ -42,7 +42,7 @@ const server = http.createServer((req, res) => {
         });
         res.end('<h1>404 Not Found</h1>', 'utf-8');
       } else {
-        res.writeHead(500, { 
+        res.writeHead(500, {
           'Content-Type': 'text/html',
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
@@ -51,7 +51,7 @@ const server = http.createServer((req, res) => {
         res.end(`<h1>500 Server Error: ${error.code}</h1>`, 'utf-8');
       }
     } else {
-      res.writeHead(200, { 
+      res.writeHead(200, {
         'Content-Type': contentType,
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
