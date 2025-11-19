@@ -55,13 +55,13 @@ function getSidebarHTML(activePage) {
 
         <!-- Footer / Logout -->
         <div class="p-4 border-t border-slate-700">
+          <button id="sidebar-toggle" class="mb-3 w-full text-slate-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 text-xs border border-slate-700 hover:border-slate-600" title="Toggle Sidebar">
+            <span class="sidebar-toggle-icon">«</span>
+          </button>
           <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors border border-rose-500/30 hover:border-rose-500/50" title="Logout">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
             <span class="sidebar-text">Logout</span>
           </a>
-          <button id="sidebar-toggle" class="mt-3 w-full text-slate-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 text-xs border border-slate-700 hover:border-slate-600" title="Toggle Sidebar">
-            <span class="sidebar-toggle-icon">«</span>
-          </button>
         </div>
 
       </div>
