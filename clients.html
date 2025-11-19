@@ -57,39 +57,82 @@
       const grid = document.getElementById('clientsGrid');
 
       if (clients.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500">No clients found. Add one to get started.</div>`;
-        return;
-      }
+        // Mock Data for Empty State
+        const mockClients = [
+          { id: 'mock1', name: 'Acme Corp', email: 'contact@acme.com', phone: '555-0123', address: '123 Industrial Way' },
+          { id: 'mock2', name: 'Globex Inc', email: 'info@globex.com', phone: '555-0456', address: '456 Global Blvd' },
+          { id: 'mock3', name: 'Soylent Corp', email: 'sales@soylent.com', phone: '555-0789', address: '789 Future Ln' }
+        ];
 
-      clients.forEach(client => {
-        const card = document.createElement('div');
-        card.className = 'surface-card p-6 flex flex-col gap-4 group hover:border-blue-300 transition-colors';
-        card.innerHTML = `
-          <div class="flex items-start justify-between">
-            <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-xl font-bold text-slate-600">
-              ${client.name.charAt(0)}
+        mockClients.forEach(client => {
+          const card = document.createElement('div');
+          card.className = 'surface-card p-6 flex flex-col gap-4 opacity-60 grayscale-[50%] relative group hover:opacity-100 hover:grayscale-0 transition-all';
+          card.title = "Example Data";
+          card.innerHTML = `
+                <div class="absolute top-2 right-2 text-xs bg-slate-100 text-slate-400 px-2 py-1 rounded">Example</div>
+                <div class="flex items-start justify-between">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-xl font-bold text-emerald-600">
+                    ${client.name.charAt(0)}
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">${client.name}</h3>
+                    <p class="text-sm text-slate-500">${client.email}</p>
+                </div>
+
+                <div class="space-y-2 text-sm text-slate-600">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-phone w-4 text-center text-slate-400"></i> ${client.phone}</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot w-4 text-center text-slate-400"></i> ${client.address}</div>
+                </div>
+
+                <div class="pt-4 mt-auto border-t border-slate-100 flex gap-3">
+                    <button disabled class="flex-1 secondary-action justify-center text-xs py-2 cursor-not-allowed opacity-50">
+                    Create Invoice
+                    </button>
+                </div>
+            `;
+          grid.appendChild(card);
+        });
+
+        // Add a note
+        const note = document.createElement('div');
+        note.className = 'col-span-full text-center py-8 text-slate-400 italic';
+        note.innerHTML = '<p>Showing example clients. Add a new client to get started.</p>';
+        grid.appendChild(note);
+
+      } else {
+        clients.forEach(client => {
+          const card = document.createElement('div');
+          card.className = 'surface-card p-6 flex flex-col gap-4';
+          card.innerHTML = `
+            <div class="flex items-start justify-between">
+              <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-xl font-bold text-slate-600">
+                ${client.name.charAt(0)}
+              </div>
+              <button class="text-slate-400 hover:text-blue-600 transition-colors"><i
+                  class="fa-solid fa-ellipsis-vertical"></i></button>
             </div>
-            <button class="text-slate-400 hover:text-blue-600 transition-colors"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-          </div>
-          
-          <div>
-            <h3 class="text-lg font-bold text-slate-900">${client.name}</h3>
-            <p class="text-sm text-slate-500">${client.email}</p>
-          </div>
 
-          <div class="space-y-2 text-sm text-slate-600">
-            <div class="flex items-center gap-2"><i class="fa-solid fa-phone w-4 text-center text-slate-400"></i> ${client.phone || 'N/A'}</div>
-            <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot w-4 text-center text-slate-400"></i> ${client.address || 'N/A'}</div>
-          </div>
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">${client.name}</h3>
+              <p class="text-sm text-slate-500">${client.email}</p>
+            </div>
 
-          <div class="pt-4 mt-auto border-t border-slate-100 flex gap-3">
-            <a href="create-invoice.html?client=${client.id}" class="flex-1 secondary-action justify-center text-xs py-2">
-              Create Invoice
-            </a>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
+            <div class="space-y-2 text-sm text-slate-600">
+              <div class="flex items-center gap-2"><i class="fa-solid fa-phone w-4 text-center text-slate-400"></i> ${client.phone || 'N/A'}</div>
+              <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot w-4 text-center text-slate-400"></i> ${client.address || 'N/A'}</div>
+            </div>
+
+            <div class="pt-4 mt-auto border-t border-slate-100 flex gap-3">
+              <a href="create-invoice.html?client=${client.id}" class="flex-1 secondary-action justify-center text-xs py-2">
+                Create Invoice
+              </a>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
     });
   </script>
 </body>

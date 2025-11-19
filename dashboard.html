@@ -36,12 +36,14 @@
 <body class="antialiased bg-slate-50">
 
   <div class="flex min-h-screen">
+    <!-- Sidebar -->
     <script>injectSidebar('dashboard');</script>
 
     <main class="flex-1 flex flex-col">
 
       <!-- Topbar -->
-      <header class="modern-topbar flex items-center justify-between px-8 py-4 sticky top-0 z-20">
+      <header
+        class="modern-topbar flex items-center justify-between px-8 py-4 sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200">
         <div>
           <h2 class="text-2xl font-bold text-slate-800">Dashboard</h2>
           <p class="text-sm text-slate-500">Overview & AI Analytics</p>
@@ -142,7 +144,7 @@
                       <th class="text-left">Status</th>
                     </tr>
                   </thead>
-                  <tbody id="invoiceTableBody">
+                  <tbody id="recentInvoicesBody">
                     <!-- Injected -->
                   </tbody>
                 </table>
@@ -203,64 +205,60 @@
       document.getElementById('pendingAmount').textContent = DataManager.formatMoney(pending);
       document.getElementById('overdueAmount').textContent = DataManager.formatMoney(overdue);
       document.getElementById('totalClients').textContent = clients.length;
-      <link rel="stylesheet" href="css/modern-ui.css">
-        <script src="js/data-manager.js"></script>
-  <script src="js/sidebarTemplate.js"></script>
-  <style>
-    /* Custom Dashboard Gradients */
-    .metric-card-tech {
-      background: white;
-      border: 1px solid var(--slate-200);
-      position: relative;
-      overflow: hidden;
-    }
 
-    .metric-card-tech::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
-      border-radius: 0 0 0 100%;
-    }
-  </style>
-  </head>
+      // Recent Invoices with Mock Data
+      const recentInvoicesBody = document.getElementById('recentInvoicesBody');
+      const recentInvoices = invoices.slice(0, 5);
 
-  <body class="antialiased bg-slate-50">
+      if (recentInvoices.length === 0) {
+        // Mock Data for Empty State
+        const mockInvoices = [
+          { id: 'INV-001', clientName: 'Acme Corp', issueDate: '2025-11-15', amount: 1250.00, status: 'paid' },
+          { id: 'INV-002', clientName: 'Globex Inc', issueDate: '2025-11-18', amount: 3400.50, status: 'pending' },
+          { id: 'INV-003', clientName: 'Soylent Corp', issueDate: '2025-11-19', amount: 850.00, status: 'overdue' },
+        ];
 
-    <div class="flex min-h-screen">
-      <script>injectSidebar('dashboard');</script>
+        mockInvoices.forEach(invoice => {
+          const row = document.createElement('tr');
+          row.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer opacity-60 grayscale-[50%]';
+          row.title = "Example Data";
+          row.innerHTML = `
+            <td class="py-4 pl-4 font-medium text-slate-900">#${invoice.id}</td>
+            <td class="py-4 text-slate-600">${invoice.clientName}</td>
+            <td class="py-4 text-slate-500">${invoice.issueDate}</td>
+            <td class="py-4 text-right font-medium text-slate-900">$${invoice.amount.toFixed(2)}</td>
+            <td class="py-4 pr-4 text-right">
+              <span class="status-pill status-${invoice.status}">${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</span>
+            </td>
+          `;
+          recentInvoicesBody.appendChild(row);
+        });
 
-      <main class="flex-1 flex flex-col">
+        // Add a small note
+        const noteRow = document.createElement('tr');
+        noteRow.innerHTML = `<td colspan="5" class="text-center py-2 text-xs text-slate-400 italic bg-slate-50">Showing example data. Create an invoice to see real data.</td>`;
+        recentInvoicesBody.appendChild(noteRow);
 
-        <!-- Topbar -->
-        <header class="modern-topbar flex items-center justify-between px-8 py-4 sticky top-0 z-20">
-          <div>
-            <h2 class="text-2xl font-bold text-slate-800">Dashboard</h2>
-            <p class="text-sm text-slate-500">Overview & AI Analytics</p>
-          </div>
-          <div class="flex items-center gap-4">
-            <div class="relative">
-              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-              <input type="text" placeholder="Search invoices..." class="modern-input pl-10 w-64" />
-            </div>
-            <button
-              class="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/30 flex items-center justify-center">
-              R
-            </button>
-          </div>
-        </header>
+      } else {
+        recentInvoices.forEach(invoice => {
+          const client = clients.find(c => c.id === invoice.clientId) || { name: 'Unknown Client' };
+          const row = document.createElement('tr');
+          row.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer';
+          row.onclick = () => window.location.href = `invoices.html?id=${invoice.id}`;
+          row.innerHTML = `
+            <td class="py-4 pl-4 font-medium text-slate-900">#${invoice.id}</td>
+            <td class="py-4 text-slate-600">${client.name}</td>
+            <td class="py-4 text-slate-500">${new Date(invoice.issueDate).toLocaleDateString()}</td>
+            <td class="py-4 text-right font-medium text-slate-900">$${parseFloat(invoice.amount).toFixed(2)}</td>
+            <td class="py-4 pr-4 text-right">
+              <span class="status-pill status-${invoice.status}">${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}</span>
+            </td>
+          `;
+          recentInvoicesBody.appendChild(row);
+        });
+      }
+    });
+  </script>
+</body>
 
-        <section class="flex-1 overflow-y-auto p-8">
-          <div class="max-w-7xl mx-auto space-y-8">
-
-            <!-- Metrics Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-              <!-- Revenue -->
-              <a href="invoices.html?status=paid"
-                class="surface-card p-6 group hover:border-emerald-400 transition-all cursor-pointer relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                  <div class="p-3 rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover
+</html>

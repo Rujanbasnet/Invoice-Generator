@@ -71,9 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
     inputs.id.addEventListener('input', updatePreview);
     inputs.issueDate.addEventListener('change', updatePreview);
     inputs.dueDate.addEventListener('change', updatePreview);
-    inputs.notes.addEventListener('input', updatePreview);
     inputs.discount.addEventListener('input', updatePreview);
     inputs.tax.addEventListener('input', updatePreview);
+
+    // Notes Sync
+    inputs.notes.addEventListener('input', (e) => {
+        preview.notes.textContent = e.target.value || 'Thank you for your business!';
+    });
 
     // Client Selection
     inputs.client.addEventListener('change', (e) => {
@@ -143,9 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (client) {
             preview.client.innerHTML = `
-        <p class="font-bold text-slate-900">${client.name}</p>
-        <p class="text-sm text-slate-500">${client.email}</p>
-        <p class="text-sm text-slate-500">${client.address || ''}</p>
+        <p class="font-bold text-slate-900 text-lg">${client.name}</p>
+        <p class="text-slate-500 text-sm">${client.email}</p>
+        <p class="text-slate-500 text-sm">${client.address || ''}</p>
+        <p class="text-slate-500 text-sm">${client.phone || ''}</p>
       `;
         } else {
             preview.client.innerHTML = `<p class="text-slate-400 italic">Select a client...</p>`;
@@ -214,12 +219,12 @@ document.addEventListener('DOMContentLoaded', () => {
             subtotal += total;
 
             const tr = document.createElement('tr');
-            tr.className = 'border-b border-slate-50';
+            tr.className = 'border-b border-slate-100 last:border-0';
             tr.innerHTML = `
-        <td class="py-3 text-slate-800">${item.desc}</td>
-        <td class="text-center py-3 text-slate-600">${item.qty}</td>
-        <td class="text-right py-3 text-slate-600">${DataManager.formatMoney(item.price)}</td>
-        <td class="text-right py-3 font-medium text-slate-900">${DataManager.formatMoney(total)}</td>
+        <td class="py-4 text-slate-800 font-medium">${item.desc}</td>
+        <td class="text-center py-4 text-slate-600">${item.qty}</td>
+        <td class="text-right py-4 text-slate-600">${DataManager.formatMoney(item.price)}</td>
+        <td class="text-right py-4 font-bold text-slate-900">${DataManager.formatMoney(total)}</td>
       `;
             preview.items.appendChild(tr);
         });

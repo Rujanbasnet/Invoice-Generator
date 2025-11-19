@@ -12,9 +12,9 @@ const DataManager = {
             { id: 'c3', name: 'Skyline Builders', email: 'finance@skyline.com', phone: '555-0103', address: '789 High Rise, New York, NY' }
         ],
         invoices: [
-            { id: 'INV-00128', clientId: 'c1', clientName: 'Acme Corp', date: '2025-10-12', dueDate: '2025-11-12', amount: 540.00, status: 'Paid', items: [] },
-            { id: 'INV-00127', clientId: 'c2', clientName: 'Blue Ocean LLC', date: '2025-10-10', dueDate: '2025-11-10', amount: 1240.00, status: 'Pending', items: [] },
-            { id: 'INV-00126', clientId: 'c3', clientName: 'Skyline Builders', date: '2025-10-08', dueDate: '2025-11-08', amount: 820.00, status: 'Overdue', items: [] }
+            { id: 'INV-00128', clientId: 'c1', clientName: 'Acme Corp', issueDate: '2025-10-12', dueDate: '2025-11-12', amount: 540.00, status: 'Paid', items: [] },
+            { id: 'INV-00127', clientId: 'c2', clientName: 'Blue Ocean LLC', issueDate: '2025-10-10', dueDate: '2025-11-10', amount: 1240.00, status: 'Pending', items: [] },
+            { id: 'INV-00126', clientId: 'c3', clientName: 'Skyline Builders', issueDate: '2025-10-08', dueDate: '2025-11-08', amount: 820.00, status: 'Overdue', items: [] }
         ]
     },
 
