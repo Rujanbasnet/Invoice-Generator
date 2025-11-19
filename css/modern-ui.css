@@ -209,10 +209,12 @@ body {
   transform: scale(1.1);
 }
 
-/* Logo Link - Prevent any background color */
-#main-sidebar .px-6.py-6 a,
-#main-sidebar .px-6.py-6 a *,
-#main-sidebar .px-6.py-6 div,
+/* Logo Link - Prevent white background while keeping icon gradient */
+#main-sidebar .px-6.py-6 a {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 #main-sidebar .px-6.py-6 h1,
 #main-sidebar .px-6.py-6 p {
   background: transparent !important;
