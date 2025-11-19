@@ -208,3 +208,13 @@ body {
 .sidebar-link:hover i {
   transform: scale(1.1);
 }
+
+/* Logo Link - Prevent any background color */
+#main-sidebar .px-6.py-6 a,
+#main-sidebar .px-6.py-6 a *,
+#main-sidebar .px-6.py-6 div,
+#main-sidebar .px-6.py-6 h1,
+#main-sidebar .px-6.py-6 p {
+  background: transparent !important;
+  background-color: transparent !important;
+}
