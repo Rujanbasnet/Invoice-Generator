@@ -173,11 +173,11 @@ body {
   border-bottom: 1px solid var(--slate-200);
 }
 
-/* Sidebar - Dark Tech Theme with darker green tint */
+/* Sidebar - Deep Navy Blue Theme */
 .sidebar-container {
-  background: linear-gradient(180deg, #0a1f1a 0%, #0d2420 100%);
-  /* Darker green tint */
-  border-right: 1px solid #1a3530;
+  background: linear-gradient(180deg, #0f1729 0%, #1a1f3a 100%);
+  /* Rich navy blue with purple undertone */
+  border-right: 1px solid #252b4a;
   color: #94a3b8;
 }
 
